@@ -1,0 +1,19 @@
+{
+  "name": "rakumo-de-chrome-extention",
+  "version": "1.0.0",
+  "description": "rakumoで使えるchromeの拡張機能",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/50ra4/rakumo-de-chrome-extention.git"
+  },
+  "author": "50ra4",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/50ra4/rakumo-de-chrome-extention/issues"
+  },
+  "homepage": "https://github.com/50ra4/rakumo-de-chrome-extention#readme"
+}
