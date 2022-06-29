@@ -1,5 +1,5 @@
 {
-  "name": "rakumo-de-chrome-extention",
+  "name": "rakumo-de-chrome-extension",
   "version": "1.0.0",
   "description": "rakumoで使えるchromeの拡張機能",
   "main": "index.js",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/50ra4/rakumo-de-chrome-extention.git"
+    "url": "git+https://github.com/50ra4/rakumo-de-chrome-extension.git"
   },
   "author": "50ra4",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/50ra4/rakumo-de-chrome-extention/issues"
+    "url": "https://github.com/50ra4/rakumo-de-chrome-extension/issues"
   },
-  "homepage": "https://github.com/50ra4/rakumo-de-chrome-extention#readme",
+  "homepage": "https://github.com/50ra4/rakumo-de-chrome-extension#readme",
   "dependencies": {
     "react": "18.2.0",
     "react-dom": "18.2.0"
