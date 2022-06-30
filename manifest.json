@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "rakumo de extension",
+  "description": "Get working hours from rakumo",
+  "version": "1.0.0",
+  "icons": {
+    "16": "public/icons/icon16.png",
+    "48": "public/icons/icon48.png",
+    "128": "public/icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "author": "50ra4",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://a-rakumo.appspot.com/*"],
+      "js": ["src/content_script.tsx"]
+    }
+  ]
+}
