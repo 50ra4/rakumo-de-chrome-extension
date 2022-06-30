@@ -4,9 +4,10 @@ module.exports = {
     es2021: true
   },
   extends: [
+    'plugin:react/recommended',
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
-    'plugin:react/recommended',
+    'prettier',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -14,11 +15,16 @@ module.exports = {
       jsx: true
     },
     ecmaVersion: 'latest',
-    sourceType: 'module'
+    sourceType: 'module',
+    tsconfigRootDir: __dirname,
+    project: ['./tsconfig.json'],
   },
   plugins: [
     'react',
     '@typescript-eslint'
+  ],
+  ignorePatterns: [
+    '.eslintrc.js'
   ],
   rules: {
   }
