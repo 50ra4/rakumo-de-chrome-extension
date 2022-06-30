@@ -4,9 +4,9 @@ module.exports = {
     es2021: true,
   },
   extends: [
+    'eslint:recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
-    'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'prettier',
   ],
@@ -19,6 +19,11 @@ module.exports = {
     sourceType: 'module',
     tsconfigRootDir: __dirname,
     project: ['./tsconfig.json'],
+  },
+  settings: {
+    react: {
+      version: 'detect',
+    },
   },
   plugins: ['react', '@typescript-eslint'],
   ignorePatterns: ['.eslintrc.js'],
