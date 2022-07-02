@@ -2,16 +2,29 @@ const Menus = {
   exportRecord: 'exportRecord',
 } as const;
 
+const fetchActiveTab = async () => await chrome.tabs.query({ active: true }).then(([tab]) => tab);
+
+const fetchListContent = async (tabId?: number) => {
+  if (!tabId) return;
+  chrome.scripting.executeScript({
+    target: { tabId },
+    func: () => {
+      const element = document.querySelector('div.list-content');
+      console.log('query', element);
+    },
+  });
+};
+
 chrome.contextMenus.create({
   id: Menus.exportRecord,
   title: '勤怠を出力する',
   contexts: ['all'],
 });
 
-chrome.contextMenus.onClicked.addListener((info, _) => {
+chrome.contextMenus.onClicked.addListener((info, tab) => {
   switch (info.menuItemId) {
     case Menus.exportRecord:
-      console.log(`${Menus.exportRecord} clicked`);
+      fetchListContent(tab?.id);
       break;
 
     default:
@@ -21,6 +34,10 @@ chrome.contextMenus.onClicked.addListener((info, _) => {
 
 chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   console.log(request.text);
+  fetchActiveTab().then((tab) => {
+    fetchListContent(tab?.id);
+  });
+
   sendResponse({ text: 'onMessage response' });
 });
 

@@ -1,6 +1,8 @@
 import { defineManifest } from '@crxjs/vite-plugin';
 import { version } from './package.json';
 
+const hostUrl = 'https://a-rakumo.appspot.com/attendance/reports';
+
 const extensionName = 'rakumo de extension';
 
 const names = {
@@ -28,20 +30,15 @@ export default defineManifest(({ command, mode, ...manifest }) => ({
   },
   devtools_page: 'src/devTools/index.html',
   author: '50ra4',
-  permissions: ['storage', 'background', 'contextMenus'],
+  permissions: ['storage', 'background', 'contextMenus', 'scripting', 'tabs'],
+  host_permissions: [`${hostUrl}/*`],
   content_scripts: [
     {
-      matches: ['https://a-rakumo.appspot.com/*'],
+      matches: [`${hostUrl}/*`],
       js: ['src/content_script.tsx'],
     },
   ],
   background: {
     service_worker: 'src/background.ts',
   },
-  web_accessible_resources: [
-    {
-      matches: ['https://a-rakumo.appspot.com/*'],
-      resources: ['*'],
-    },
-  ],
 }));
