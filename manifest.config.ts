@@ -6,14 +6,14 @@ const extensionName = 'rakumo de extension';
 const names = {
   build: extensionName,
   serve: `[INTERNAL] ${extensionName}`,
-};
+} as const;
 
 // import to `vite.config.ts`
-export default defineManifest((manifest) => ({
+export default defineManifest(({ command, mode: _, ...manifest }) => ({
   ...manifest,
   version,
   manifest_version: 3,
-  name: names[process.env?.command!],
+  name: names[command],
   description: 'Get working hours from rakumo',
   icons: {
     '16': 'public/icons/icon16.png',
