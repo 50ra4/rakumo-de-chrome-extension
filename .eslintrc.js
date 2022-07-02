@@ -26,6 +26,6 @@ module.exports = {
     },
   },
   plugins: ['react', '@typescript-eslint'],
-  ignorePatterns: ['.eslintrc.js'],
+  ignorePatterns: ['*.js'],
   rules: {},
 };
