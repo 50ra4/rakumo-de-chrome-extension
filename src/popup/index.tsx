@@ -1,17 +1,25 @@
-import React, { StrictMode } from 'react';
+import React, { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 const Popup = () => {
+  const [state, setState] = useState('');
+
+  const onClickExport = () => {
+    chrome.runtime.sendMessage({ text: 'onClick export button' }, (response) => {
+      console.log(response.text);
+      setState(response.text);
+    });
+  };
+
   return (
     <div
       style={{
-        color: 'red',
-        fontSize: '24px',
-        width: '320px',
-        height: '320px',
+        minWidth: '320px',
+        minHeight: '320px',
       }}
     >
-      rakumo-de-extension popup
+      <button onClick={onClickExport}>勤怠情報を出力する</button>
+      <div>{`${state}`}</div>
     </div>
   );
 };

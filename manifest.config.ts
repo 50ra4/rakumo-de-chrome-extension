@@ -9,7 +9,7 @@ const names = {
 } as const;
 
 // import to `vite.config.ts`
-export default defineManifest(({ command, mode: _, ...manifest }) => ({
+export default defineManifest(({ command, mode, ...manifest }) => ({
   ...manifest,
   version,
   manifest_version: 3,
@@ -28,13 +28,16 @@ export default defineManifest(({ command, mode: _, ...manifest }) => ({
   },
   devtools_page: 'src/devTools/index.html',
   author: '50ra4',
-  permissions: ['storage'],
+  permissions: ['storage', 'background'],
   content_scripts: [
     {
       matches: ['https://a-rakumo.appspot.com/*'],
       js: ['src/content_script.tsx'],
     },
   ],
+  background: {
+    service_worker: 'src/background.ts',
+  },
   web_accessible_resources: [
     {
       matches: ['https://a-rakumo.appspot.com/*'],
