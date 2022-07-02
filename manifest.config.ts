@@ -28,7 +28,7 @@ export default defineManifest(({ command, mode, ...manifest }) => ({
   },
   devtools_page: 'src/devTools/index.html',
   author: '50ra4',
-  permissions: ['storage', 'background'],
+  permissions: ['storage', 'background', 'contextMenus'],
   content_scripts: [
     {
       matches: ['https://a-rakumo.appspot.com/*'],
