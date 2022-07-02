@@ -26,7 +26,7 @@ export default defineManifest(({ command, mode: _, ...manifest }) => ({
   options_ui: {
     page: 'src/options/index.html',
   },
-  devtools_page: 'src/devtools/index.html',
+  devtools_page: 'src/devTools/index.html',
   author: '50ra4',
   permissions: ['storage'],
   content_scripts: [
