@@ -11,7 +11,7 @@
     "lint:eslint": "eslint --fix '{src,tools}/**/*.{js,ts,tsx}'",
     "lint": "npm run lint:prettier && npm run lint:eslint",
     "prepare": "husky install",
-    "test": "jest -c ./jest.config.js"
+    "test": "jest -c ./jest.config.ts"
   },
   "repository": {
     "type": "git",
@@ -31,6 +31,7 @@
     "@crxjs/vite-plugin": "1.0.12",
     "@types/chrome": "0.0.191",
     "@types/jest": "28.1.4",
+    "@types/node": "18.0.0",
     "@types/react": "18.0.14",
     "@types/react-dom": "18.0.5",
     "@typescript-eslint/eslint-plugin": "5.30.0",
@@ -45,6 +46,7 @@
     "jest": "28.1.2",
     "prettier": "2.7.1",
     "ts-jest": "28.0.5",
+    "ts-node": "10.8.1",
     "typescript": "4.7.4",
     "vite": "2.9.13"
   }
