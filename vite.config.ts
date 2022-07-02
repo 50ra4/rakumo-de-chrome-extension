@@ -5,8 +5,10 @@ import { resolve } from 'path';
 import manifest from './manifest.config';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ command, ...config }) => ({
+  ...config,
   build: {
+    outDir: command === 'build' ? 'dist' : '.vite-dev',
     rollupOptions: {
       input: {
         // output file at '/index.html'
@@ -19,4 +21,4 @@ export default defineConfig({
     },
   },
   plugins: [crx({ manifest })],
-});
+}));

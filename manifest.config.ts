@@ -5,7 +5,7 @@ const extensionName = 'rakumo de extension';
 
 const names = {
   build: extensionName,
-  serve: `[INTERNAL] ${extensionName}`,
+  serve: `[DEV] ${extensionName}`,
 } as const;
 
 // import to `vite.config.ts`
