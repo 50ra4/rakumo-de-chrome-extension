@@ -11,7 +11,8 @@
     "lint:eslint": "eslint --fix '{src,tools}/**/*.{js,ts,tsx}'",
     "lint": "npm run lint:prettier && npm run lint:eslint",
     "prepare": "husky install",
-    "test": "jest -c ./jest.config.ts"
+    "test": "jest -c ./jest.config.ts",
+    "check-type": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
