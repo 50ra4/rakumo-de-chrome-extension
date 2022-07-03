@@ -30,8 +30,7 @@ export default defineManifest(({ command, mode, ...manifest }) => ({
   },
   devtools_page: 'src/devTools/index.html',
   author: '50ra4',
-  permissions: ['storage', 'background', 'contextMenus', 'scripting', 'tabs'],
-  host_permissions: [`${hostUrl}/*`],
+  permissions: ['storage', 'background', 'contextMenus', 'scripting', 'tabs', 'activeTab'],
   content_scripts: [
     {
       matches: [`${hostUrl}/*`],
