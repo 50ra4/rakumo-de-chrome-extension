@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/50ra4/rakumo-de-chrome-extension#readme",
   "dependencies": {
+    "date-fns": "2.28.0",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
