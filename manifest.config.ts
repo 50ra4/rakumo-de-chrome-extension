@@ -1,15 +1,17 @@
 import { defineManifest } from '@crxjs/vite-plugin';
 import { version } from './package.json';
 
+const hostUrl = 'https://a-rakumo.appspot.com/attendance/reports';
+
 const extensionName = 'rakumo de extension';
 
 const names = {
   build: extensionName,
-  serve: `[INTERNAL] ${extensionName}`,
+  serve: `[DEV] ${extensionName}`,
 } as const;
 
 // import to `vite.config.ts`
-export default defineManifest(({ command, mode: _, ...manifest }) => ({
+export default defineManifest(({ command, mode, ...manifest }) => ({
   ...manifest,
   version,
   manifest_version: 3,
@@ -28,17 +30,14 @@ export default defineManifest(({ command, mode: _, ...manifest }) => ({
   },
   devtools_page: 'src/devTools/index.html',
   author: '50ra4',
-  permissions: ['storage'],
+  permissions: ['storage', 'background', 'contextMenus', 'scripting', 'tabs', 'activeTab'],
   content_scripts: [
     {
-      matches: ['https://a-rakumo.appspot.com/*'],
+      matches: [`${hostUrl}/*`],
       js: ['src/content_script.tsx'],
     },
   ],
-  web_accessible_resources: [
-    {
-      matches: ['https://a-rakumo.appspot.com/*'],
-      resources: ['*'],
-    },
-  ],
+  background: {
+    service_worker: 'src/background.ts',
+  },
 }));
