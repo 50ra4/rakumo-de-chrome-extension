@@ -9,26 +9,28 @@ const fetchListContent = async (tabId?: number) => {
   chrome.scripting.executeScript({
     target: { tabId },
     func: () => {
-      const element = document.querySelector('div.list-content');
-      if (!element) return;
+      const getCells = () => {
+        const element = document.querySelector('div.list-content');
+        if (!element) return;
 
-      const rows = Array.from(element.querySelectorAll('div.trow').values());
-      const cells = rows.map((row) => ({
-        isDayOff: row.classList.contains('day-off'),
-        date: (row.querySelector('.date') as HTMLDivElement)?.innerText,
-        workingPattern: (row.querySelector('.working-pattern') as HTMLDivElement)?.innerText,
-        checkIn: (row.querySelector('.checkin-time') as HTMLDivElement)?.innerText,
-        checkOut: (row.querySelector('.checkout-time') as HTMLDivElement)?.innerText,
-        breakTime: (row.querySelector('.break-minutes') as HTMLDivElement)?.innerText,
-        workingTime: (row.querySelector('.working-minutes') as HTMLDivElement)?.innerText,
-        note: row.querySelector('.note'), // FIXME:
-        flows: row.querySelector('.flows'), // FIXME:
-        holidayText: (
-          row.querySelector('.time-span-banner')?.querySelector('.bar.lh.rh') as HTMLDivElement
-        )?.innerText,
-      }));
+        const rows = Array.from(element.querySelectorAll('div.trow').values());
+        return rows.map((row) => ({
+          isDayOff: row.classList.contains('day-off'),
+          date: (row.querySelector('.date') as HTMLDivElement)?.innerText,
+          workingPattern: (row.querySelector('.working-pattern') as HTMLDivElement)?.innerText,
+          checkIn: (row.querySelector('.checkin-time') as HTMLDivElement)?.innerText,
+          checkOut: (row.querySelector('.checkout-time') as HTMLDivElement)?.innerText,
+          breakTime: (row.querySelector('.break-minutes') as HTMLDivElement)?.innerText,
+          workingTime: (row.querySelector('.working-minutes') as HTMLDivElement)?.innerText,
+          note: row.querySelector('.note'), // FIXME:
+          flows: row.querySelector('.flows'), // FIXME:
+          holidayText: (
+            row.querySelector('.time-span-banner')?.querySelector('.bar.lh.rh') as HTMLDivElement
+          )?.innerText,
+        }));
+      };
 
-      console.log('query', cells);
+      console.log('query', getCells());
     },
   });
 };
