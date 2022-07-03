@@ -1,8 +1,7 @@
 import { getCellsFromDocument } from './utils/document';
 
-// FIXME: Get different tabs...
-const fetchActiveTab = async () =>
-  await chrome.tabs.query({ lastFocusedWindow: true }).then(([tab]) => tab);
+const fetchCurrentActiveTab = async () =>
+  await chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => tab);
 
 const fetchListContent = async (tabId?: number) => {
   if (!tabId) return;
@@ -41,7 +40,7 @@ const fetchListContent = async (tabId?: number) => {
 
 chrome.runtime.onMessage.addListener((_message, _, sendResponse) => {
   // TODO: Switch to different processing depending on the message
-  fetchActiveTab()
+  fetchCurrentActiveTab()
     .then((tab) => fetchListContent(tab?.id))
     .then((data) => {
       // TODO: add type
