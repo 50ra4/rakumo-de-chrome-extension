@@ -1,14 +1,19 @@
 import React, { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { ContentCells, toAttendanceRecords } from '../utils/document';
 
 const Popup = () => {
   const [state, setState] = useState('');
 
   const onClickExport = () => {
-    chrome.runtime.sendMessage({ text: 'onClick export button' }, (response) => {
-      console.log(response.text);
-      setState(response.text);
-    });
+    chrome.runtime.sendMessage<{ name: 'message' }, { status: 'done'; data: ContentCells }>(
+      { name: 'message' },
+      (response) => {
+        console.log(response);
+        setState(response?.status);
+        console.log(toAttendanceRecords(response.data));
+      },
+    );
   };
 
   return (
