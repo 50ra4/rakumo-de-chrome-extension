@@ -1,9 +1,10 @@
 import React, { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ContentCells, toAttendanceRecords } from '../utils/document';
+import { AttendanceRecords, ContentCells, toAttendanceRecords } from '../utils/document';
 
 const Popup = () => {
   const [state, setState] = useState('');
+  const [data, setData] = useState<AttendanceRecords | null>(null);
 
   const onClickExport = () => {
     chrome.runtime.sendMessage<{ name: 'message' }, { status: 'done'; data: ContentCells }>(
@@ -11,7 +12,7 @@ const Popup = () => {
       (response) => {
         console.log(response);
         setState(response?.status);
-        console.log(toAttendanceRecords(response.data));
+        setData(toAttendanceRecords(response.data));
       },
     );
   };
@@ -25,6 +26,7 @@ const Popup = () => {
     >
       <button onClick={onClickExport}>勤怠情報を出力する</button>
       <div>{`${state}`}</div>
+      <div>{`${JSON.stringify(data)}`}</div>
     </div>
   );
 };
