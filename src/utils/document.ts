@@ -29,9 +29,24 @@ export const getAttendanceReportDocument = () => {
     return records;
   };
 
+  const getReportSummary = () => {
+    const items = (
+      Array.from(
+        document.querySelectorAll('.report-summary > .row > .content > .column > .item'),
+      ) as HTMLElement[]
+    ).map((element) => ({
+      name: (element.querySelector('.name') as HTMLElementOrNull)?.innerText,
+      value: (element.querySelector('.value') as HTMLElementOrNull)?.innerText,
+    }));
+
+    return items;
+  };
+
   const displayedMonth = getDisplayedMonth();
   const listContent = getListContent();
-  return { displayedMonth, listContent };
+  const reportSummary = getReportSummary();
+
+  return { displayedMonth, listContent, reportSummary };
 };
 
 export type AttendanceReportDocument = ReturnType<typeof getAttendanceReportDocument>;
