@@ -5,7 +5,6 @@ import { AttendanceReportDocument } from '../utils/document';
 
 const Popup = () => {
   const [state, setState] = useState('');
-  const [downloadLink, setDownloadLink] = useState<string>();
 
   const onClickExport = () => {
     chrome.runtime.sendMessage<
@@ -15,7 +14,13 @@ const Popup = () => {
       console.log(response);
       setState(response?.status);
       const blob = toExportCsv(response.data);
-      setDownloadLink(URL.createObjectURL(blob));
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([blob]));
+      link.setAttribute('download', `report.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
     });
   };
 
@@ -28,11 +33,6 @@ const Popup = () => {
     >
       <button onClick={onClickExport}>勤怠情報を出力する</button>
       <div>{`${state}`}</div>
-      {downloadLink && (
-        <a href={downloadLink} download="report.csv">
-          ダウンロード
-        </a>
-      )}
     </div>
   );
 };
