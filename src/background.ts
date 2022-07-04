@@ -1,4 +1,4 @@
-import { getCellsFromDocument } from './utils/document';
+import { getAttendanceReportDocument } from './utils/document';
 
 const fetchCurrentActiveTab = async () =>
   await chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => tab);
@@ -7,7 +7,7 @@ const fetchListContent = async (tabId?: number) => {
   if (!tabId) return;
   const response = await chrome.scripting.executeScript({
     target: { tabId },
-    func: getCellsFromDocument,
+    func: getAttendanceReportDocument,
   });
   const [head] = response;
   return head.result;
