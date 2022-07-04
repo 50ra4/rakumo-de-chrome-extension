@@ -1,4 +1,5 @@
-import { getDay, getDate, getMonth } from 'date-fns';
+import { getDay, getDate, getMonth, format } from 'date-fns';
+import ja from 'date-fns/locale/ja';
 import { dateStringToDate, isMatchDateFormat, timeStringToMinute } from './date';
 import { AttendanceReportDocument } from './document';
 
@@ -45,3 +46,42 @@ export const toAttendanceRecords = (document: AttendanceReportDocument) => {
 };
 
 export type AttendanceRecord = ReturnType<typeof toAttendanceRecords>[number];
+
+const formatTimeRangeText = ({
+  checkIn,
+  checkOut,
+  isDayOff,
+  isHoliday,
+  holidayText,
+}: {
+  checkIn?: Date;
+  checkOut?: Date;
+  isDayOff: boolean;
+  isHoliday: boolean;
+  holidayText: string;
+}) => {
+  if (isDayOff && !checkIn && !checkOut) {
+    return '休日';
+  }
+  if (isHoliday) {
+    return holidayText;
+  }
+  if (!checkIn && !checkOut) {
+    return 'N/A';
+  }
+  return `${checkIn ? format(checkIn, 'HH:mm') : 'N/A'}-${
+    checkOut ? format(checkOut, 'HH:mm') : 'N/A'
+  }`;
+};
+
+export const toExportCsv = (document: AttendanceReportDocument) => {
+  const headers = ['日付', '勤務時間'];
+  const data = toAttendanceRecords(document).map(
+    ({ date, checkIn, checkOut, isDayOff, isHoliday, holidayText }) => [
+      format(date, 'MM/dd(EEEEE)', { locale: ja }),
+      formatTimeRangeText({ checkIn, checkOut, isDayOff, isHoliday, holidayText }),
+    ],
+  );
+  const records = [headers, ...data].map((arr) => arr.map((v) => `"${v}"`).join(',')).join('\n');
+  return new Blob([records], { type: 'text/csv' });
+};
