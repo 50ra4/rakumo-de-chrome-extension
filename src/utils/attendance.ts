@@ -8,6 +8,7 @@ export const toAttendanceRecords = (document: AttendanceReportDocument) => {
   const displayedMonth = dateStringToDate(document.displayedMonth, 'yyyy年 M月度');
   const month = getMonth(displayedMonth) + 1;
 
+  // TODO: 念の為、日付でソートする
   return document.listContent.map(
     ({
       date: dateStr,

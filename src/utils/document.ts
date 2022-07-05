@@ -39,6 +39,7 @@ export const getAttendanceReportDocument = () => {
       value: (element.querySelector('.value') as HTMLElementOrNull)?.innerText,
     }));
 
+    // TODO: 扱いやすいフォーマットに変更する
     return items;
   };
 
