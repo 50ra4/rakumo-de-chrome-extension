@@ -82,9 +82,11 @@ const toWorkingHour = ({
   isDayOff,
   isHoliday,
   holidayText,
+  dayOfWeek,
 }: AttendanceRecord) => ({
   date: format(date, 'MM/dd(EEEEE)', { locale: ja }),
   workingHours: formatWorkingHoursText({ checkIn, checkOut, isDayOff, isHoliday, holidayText }),
+  dayOfWeek,
 });
 
 export const generateCsv = (records: AttendanceRecord[]) => {
@@ -96,4 +98,17 @@ export const generateCsv = (records: AttendanceRecord[]) => {
     .map((arr) => arr.map((v) => `"${v}"`).join(','))
     .join('\n');
   return new Blob([data], { type: 'text/csv' });
+};
+
+export const generateTextPlain = (records: AttendanceRecord[]) => {
+  const lines: string[] = [];
+
+  lines.push('【稼働詳細】');
+  records.map(toWorkingHour).forEach(({ date, workingHours, dayOfWeek }) => {
+    lines.push(`${date} ${workingHours}`);
+    if (dayOfWeek !== 0) return;
+    lines.push('');
+  });
+
+  return new Blob([lines.join('\n')], { type: 'text/plain' });
 };

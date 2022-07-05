@@ -1,23 +1,24 @@
 import React, { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { generateCsv, toAttendanceRecords } from '../utils/attendance';
+import { generateCsv, toAttendanceRecords, generateTextPlain } from '../utils/attendance';
 import { AttendanceReportDocument } from '../utils/document';
 
 const OUTPUT_FORMAT_OPTIONS = [
   {
     type: 'csv',
-    name: 'CSV形式',
+    name: 'csv形式',
+    extension: 'csv',
   },
   {
     type: 'text',
-    name: 'Text形式',
+    name: 'text形式',
+    extension: 'txt',
   },
 ] as const;
 
 type OutputFormat = typeof OUTPUT_FORMAT_OPTIONS[number];
 
 const Popup = () => {
-  const [state, setState] = useState('');
   const [outputFormat, setOutputFormat] = useState<OutputFormat>(OUTPUT_FORMAT_OPTIONS[0]);
 
   const onClickExport = () => {
@@ -26,14 +27,14 @@ const Popup = () => {
       { status: 'done'; data: AttendanceReportDocument }
     >({ name: 'message' }, (response) => {
       console.log(response);
-      setState(response?.status);
 
       const records = toAttendanceRecords(response.data);
-      const blob = generateCsv(records);
+      const blob = outputFormat.type === 'csv' ? generateCsv(records) : generateTextPlain(records);
+      const fileName = `report.${outputFormat.extension}`;
 
       const link = document.createElement('a');
       link.href = URL.createObjectURL(new Blob([blob]));
-      link.setAttribute('download', `report.csv`);
+      link.setAttribute('download', fileName);
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);
@@ -63,7 +64,6 @@ const Popup = () => {
         </select>
         <button onClick={onClickExport}>勤怠情報を出力する</button>
       </div>
-      <div>{`${state}`}</div>
     </div>
   );
 };
