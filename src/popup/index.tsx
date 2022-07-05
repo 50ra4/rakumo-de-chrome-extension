@@ -1,19 +1,50 @@
 import React, { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { ContentCells, toAttendanceRecords } from '../utils/document';
+import { generateCsv, toAttendanceRecords, generateTextPlain } from '../utils/attendance';
+import { AttendanceReportDocument } from '../utils/document';
+
+const OUTPUT_FORMAT_OPTIONS = [
+  {
+    type: 'csv',
+    name: 'csv形式',
+    extension: 'csv',
+  },
+  {
+    type: 'text',
+    name: 'text形式',
+    extension: 'txt',
+  },
+] as const;
+
+type OutputFormat = typeof OUTPUT_FORMAT_OPTIONS[number];
 
 const Popup = () => {
-  const [state, setState] = useState('');
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>(OUTPUT_FORMAT_OPTIONS[0]);
 
   const onClickExport = () => {
-    chrome.runtime.sendMessage<{ name: 'message' }, { status: 'done'; data: ContentCells }>(
+    chrome.runtime.sendMessage<
       { name: 'message' },
-      (response) => {
-        console.log(response);
-        setState(response?.status);
-        console.log(toAttendanceRecords(response.data));
-      },
-    );
+      { status: 'done'; data: AttendanceReportDocument }
+    >({ name: 'message' }, (response) => {
+      console.log(response);
+
+      const records = toAttendanceRecords(response.data);
+      const blob = outputFormat.type === 'csv' ? generateCsv(records) : generateTextPlain(records);
+      const fileName = `report.${outputFormat.extension}`;
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([blob]));
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    });
+  };
+
+  const onChangeFormat = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected =
+      OUTPUT_FORMAT_OPTIONS.find(({ type }) => e.target.value === type) ?? OUTPUT_FORMAT_OPTIONS[0];
+    setOutputFormat(selected);
   };
 
   return (
@@ -23,8 +54,16 @@ const Popup = () => {
         minHeight: '320px',
       }}
     >
-      <button onClick={onClickExport}>勤怠情報を出力する</button>
-      <div>{`${state}`}</div>
+      <div style={{ display: 'flex' }}>
+        <select value={outputFormat.type} onChange={onChangeFormat}>
+          {OUTPUT_FORMAT_OPTIONS.map(({ type, name }) => (
+            <option key={type} value={type}>
+              {name}で
+            </option>
+          ))}
+        </select>
+        <button onClick={onClickExport}>勤怠情報を出力する</button>
+      </div>
     </div>
   );
 };
