@@ -47,7 +47,10 @@ export const toAttendanceRecords = (document: AttendanceReportDocument) => {
 
 export type AttendanceRecord = ReturnType<typeof toAttendanceRecords>[number];
 
-const formatTimeRangeText = ({
+const formatHoursText = ({ start, end }: { start?: Date; end?: Date }) =>
+  `${start ? format(start, 'HH:mm') : 'N/A'}-${end ? format(end, 'HH:mm') : 'N/A'}`;
+
+const formatWorkingHoursText = ({
   checkIn,
   checkOut,
   isDayOff,
@@ -69,19 +72,28 @@ const formatTimeRangeText = ({
   if (!checkIn && !checkOut) {
     return 'N/A';
   }
-  return `${checkIn ? format(checkIn, 'HH:mm') : 'N/A'}-${
-    checkOut ? format(checkOut, 'HH:mm') : 'N/A'
-  }`;
+  return formatHoursText({ start: checkIn, end: checkOut });
 };
 
-export const toExportCsv = (document: AttendanceReportDocument) => {
+const toWorkingHour = ({
+  date,
+  checkIn,
+  checkOut,
+  isDayOff,
+  isHoliday,
+  holidayText,
+}: AttendanceRecord) => ({
+  date: format(date, 'MM/dd(EEEEE)', { locale: ja }),
+  workingHours: formatWorkingHoursText({ checkIn, checkOut, isDayOff, isHoliday, holidayText }),
+});
+
+export const generateCsv = (records: AttendanceRecord[]) => {
   const headers = ['日付', '勤務時間'];
-  const data = toAttendanceRecords(document).map(
-    ({ date, checkIn, checkOut, isDayOff, isHoliday, holidayText }) => [
-      format(date, 'MM/dd(EEEEE)', { locale: ja }),
-      formatTimeRangeText({ checkIn, checkOut, isDayOff, isHoliday, holidayText }),
-    ],
-  );
-  const records = [headers, ...data].map((arr) => arr.map((v) => `"${v}"`).join(',')).join('\n');
-  return new Blob([records], { type: 'text/csv' });
+  const monthlyWorkingHours = records
+    .map(toWorkingHour)
+    .map(({ date, workingHours }) => [date, workingHours]);
+  const data = [headers, ...monthlyWorkingHours]
+    .map((arr) => arr.map((v) => `"${v}"`).join(','))
+    .join('\n');
+  return new Blob([data], { type: 'text/csv' });
 };

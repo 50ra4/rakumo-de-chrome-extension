@@ -1,6 +1,6 @@
 import React, { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { toExportCsv } from '../utils/attendance';
+import { generateCsv, toAttendanceRecords } from '../utils/attendance';
 import { AttendanceReportDocument } from '../utils/document';
 
 const Popup = () => {
@@ -13,7 +13,9 @@ const Popup = () => {
     >({ name: 'message' }, (response) => {
       console.log(response);
       setState(response?.status);
-      const blob = toExportCsv(response.data);
+
+      const records = toAttendanceRecords(response.data);
+      const blob = generateCsv(records);
 
       const link = document.createElement('a');
       link.href = URL.createObjectURL(new Blob([blob]));
