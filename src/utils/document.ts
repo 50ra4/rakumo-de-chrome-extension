@@ -1,5 +1,23 @@
 type HTMLElementOrNull = HTMLElement | null;
 
+type ReportSummaryName =
+  | '所定労働日数'
+  | '所定労働時間'
+  | '実労働日数'
+  | '実労働時間'
+  | '時間外労働時間'
+  | '法定内'
+  | '法定外'
+  | 'みなし'
+  | '深夜労働時間'
+  | '休日労働時間'
+  | '所定休日'
+  | '法定休日'
+  | '有給休暇 (年休+特休)'
+  | '代休・休日'
+  | '有給取得時間 (年休・特休など)'
+  | '無給・欠勤・遅刻・早退';
+
 export const getAttendanceReportDocument = () => {
   const getDisplayedMonth = () => {
     const date = (document.querySelector('.period-select') as HTMLElementOrNull)?.innerText;
@@ -30,17 +48,41 @@ export const getAttendanceReportDocument = () => {
   };
 
   const getReportSummary = () => {
-    const items = (
-      Array.from(
-        document.querySelectorAll('.report-summary > .row > .content > .column > .item'),
-      ) as HTMLElement[]
-    ).map((element) => ({
-      name: (element.querySelector('.name') as HTMLElementOrNull)?.innerText,
-      value: (element.querySelector('.value') as HTMLElementOrNull)?.innerText,
-    }));
+    const mapping = new Map(
+      (
+        Array.from(
+          document.querySelectorAll('.report-summary > .row > .content > .column > .item'),
+        ) as HTMLElement[]
+      ).map(
+        (element) =>
+          [
+            (element.querySelector('.name') as HTMLElement).innerText,
+            (element.querySelector('.value') as HTMLElement).innerText,
+          ] as [ReportSummaryName, string],
+      ),
+    );
 
-    // TODO: 扱いやすいフォーマットに変更する
-    return items;
+    return {
+      prescribedWorking: {
+        days: mapping.get('所定労働日数'),
+        minutes: mapping.get('所定労働時間'),
+      },
+      actualWorking: {
+        days: mapping.get('実労働日数'),
+        minutes: mapping.get('実労働時間'),
+      },
+      overTime: {
+        totalMinutes: mapping.get('時間外労働時間'),
+        includeMinutes: mapping.get('法定内'),
+        excludeMinutes: mapping.get('法定外'),
+      },
+      leave: {
+        paidMinutes: mapping.get('有給取得時間 (年休・特休など)'),
+        unpaidMinutes: mapping.get('無給・欠勤・遅刻・早退'),
+      },
+      nightWorkingMinutes: mapping.get('深夜労働時間'),
+      dayOffWorkingMinutes: mapping.get('休日労働時間'),
+    };
   };
 
   const displayedMonth = getDisplayedMonth();
