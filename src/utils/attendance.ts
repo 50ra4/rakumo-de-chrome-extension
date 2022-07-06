@@ -48,6 +48,51 @@ export const toAttendanceRecords = (document: AttendanceReportDocument) => {
 
 export type AttendanceRecord = ReturnType<typeof toAttendanceRecords>[number];
 
+const daysStringToDays = (str: string) => {
+  const parsed = parseInt(str.trim().replace('日', ''), 10);
+  return Number.isNaN(parsed) ? undefined : parsed;
+};
+
+export const toReportSummary = ({
+  reportSummary: {
+    prescribedWorkingDays,
+    prescribedWorkingTime,
+    actualWorkingDays,
+    actualWorkingTime,
+    overtimeWorkTime,
+    overtimeWorkIncludeTime,
+    overtimeWorkExcludeTime,
+    overtimeDeemedTime,
+    leavePaidTime,
+    leaveUnpaidTime,
+    nightWorkingTime,
+    dayOffWorkingTime,
+  },
+}: AttendanceReportDocument) => ({
+  prescribedWorkingDays: prescribedWorkingDays
+    ? daysStringToDays(prescribedWorkingDays)
+    : undefined,
+  prescribedWorkingMinutes: prescribedWorkingTime
+    ? timeStringToMinute(prescribedWorkingTime)
+    : undefined,
+  actualWorkingDays: actualWorkingDays ? daysStringToDays(actualWorkingDays) : undefined,
+  actualWorkingMinutes: actualWorkingTime ? timeStringToMinute(actualWorkingTime) : undefined,
+  overtimeWorkMinutes: overtimeWorkTime ? timeStringToMinute(overtimeWorkTime) : undefined,
+  overtimeWorkIncludeMinutes: overtimeWorkIncludeTime
+    ? timeStringToMinute(overtimeWorkIncludeTime)
+    : undefined,
+  overtimeWorkExcludeMinutes: overtimeWorkExcludeTime
+    ? timeStringToMinute(overtimeWorkExcludeTime)
+    : undefined,
+  overtimeDeemedMinutes: overtimeDeemedTime ? timeStringToMinute(overtimeDeemedTime) : undefined,
+  leavePaidMinutes: leavePaidTime ? timeStringToMinute(leavePaidTime) : undefined,
+  leaveUnpaidMinutes: leaveUnpaidTime ? timeStringToMinute(leaveUnpaidTime) : undefined,
+  nightWorkingMinutes: nightWorkingTime ? timeStringToMinute(nightWorkingTime) : undefined,
+  dayOffWorkingMinutes: dayOffWorkingTime ? timeStringToMinute(dayOffWorkingTime) : undefined,
+});
+
+export type ReportSummary = ReturnType<typeof toReportSummary>;
+
 const formatHoursText = ({ start, end }: { start?: Date; end?: Date }) =>
   `${start ? format(start, 'HH:mm') : 'N/A'}-${end ? format(end, 'HH:mm') : 'N/A'}`;
 
