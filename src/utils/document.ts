@@ -53,35 +53,26 @@ export const getAttendanceReportDocument = () => {
         Array.from(
           document.querySelectorAll('.report-summary > .row > .content > .column > .item'),
         ) as HTMLElement[]
-      ).map(
-        (element) =>
-          [
-            (element.querySelector('.name') as HTMLElement).innerText,
-            (element.querySelector('.value') as HTMLElement).innerText,
-          ] as [ReportSummaryName, string],
-      ),
+      ).map((element) => {
+        const name = (element.querySelector('.name') as HTMLElement).innerText as ReportSummaryName;
+        const value = (element.querySelector('.value') as HTMLElement).innerText;
+        return [name, value] as const;
+      }),
     );
 
     return {
-      prescribedWorking: {
-        days: mapping.get('所定労働日数'),
-        minutes: mapping.get('所定労働時間'),
-      },
-      actualWorking: {
-        days: mapping.get('実労働日数'),
-        minutes: mapping.get('実労働時間'),
-      },
-      overTime: {
-        totalMinutes: mapping.get('時間外労働時間'),
-        includeMinutes: mapping.get('法定内'),
-        excludeMinutes: mapping.get('法定外'),
-      },
-      leave: {
-        paidMinutes: mapping.get('有給取得時間 (年休・特休など)'),
-        unpaidMinutes: mapping.get('無給・欠勤・遅刻・早退'),
-      },
-      nightWorkingMinutes: mapping.get('深夜労働時間'),
-      dayOffWorkingMinutes: mapping.get('休日労働時間'),
+      prescribedWorkingDays: mapping.get('所定労働日数'),
+      prescribedWorkingTime: mapping.get('所定労働時間'),
+      actualWorkingDays: mapping.get('実労働日数'),
+      actualWorkingTime: mapping.get('実労働時間'),
+      overtimeWorkTime: mapping.get('時間外労働時間'),
+      overtimeWorkIncludeTime: mapping.get('法定内'),
+      overtimeWorkExcludeTime: mapping.get('法定外'),
+      overtimeDeemedTime: mapping.get('みなし'),
+      leavePaidTime: mapping.get('有給取得時間 (年休・特休など)'),
+      leaveUnpaidTime: mapping.get('無給・欠勤・遅刻・早退'),
+      nightWorkingTime: mapping.get('深夜労働時間'),
+      dayOffWorkingTime: mapping.get('休日労働時間'),
     };
   };
 
