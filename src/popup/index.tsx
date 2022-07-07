@@ -1,5 +1,6 @@
 import React, { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { useChromeStorage } from '../hooks/useChromeStorage';
 import {
   generateCsv,
   toAttendanceRecords,
@@ -25,7 +26,7 @@ type OutputFormat = typeof OUTPUT_FORMAT_OPTIONS[number];
 
 const Popup = () => {
   const [outputFormat, setOutputFormat] = useState<OutputFormat>(OUTPUT_FORMAT_OPTIONS[0]);
-  const [workingTime, setWorkingTime] = useState('');
+  const [workingTime, setWorkingTime] = useChromeStorage('working-time', '');
 
   const onClickExport = () => {
     chrome.runtime.sendMessage<
@@ -47,7 +48,7 @@ const Popup = () => {
     });
   };
 
-  const onClickExpectedTime = () => {
+  const onClickExpectedSummary = () => {
     chrome.runtime.sendMessage<
       { name: 'message' },
       { status: 'done'; data: AttendanceReportDocument }
@@ -62,6 +63,10 @@ const Popup = () => {
     const selected =
       OUTPUT_FORMAT_OPTIONS.find(({ type }) => e.target.value === type) ?? OUTPUT_FORMAT_OPTIONS[0];
     setOutputFormat(selected);
+  };
+
+  const onChangeWorkingTime = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setWorkingTime(e.currentTarget.value);
   };
 
   return (
@@ -89,12 +94,10 @@ const Popup = () => {
           name="working-time"
           placeholder="H:mm 形式で入力"
           value={workingTime}
-          onChange={(e) => {
-            setWorkingTime(e.currentTarget.value);
-          }}
+          onChange={onChangeWorkingTime}
         />
       </div>
-      <button onClick={onClickExpectedTime}>予測時間を表示する</button>
+      <button onClick={onClickExpectedSummary}>予測時間を表示する</button>
     </div>
   );
 };
