@@ -1,5 +1,3 @@
-type HTMLElementOrNull = HTMLElement | null;
-
 type ReportSummaryName =
   | '所定労働日数'
   | '所定労働時間'
@@ -20,7 +18,7 @@ type ReportSummaryName =
 
 export const getAttendanceReportDocument = () => {
   const getDisplayedMonth = () => {
-    const date = (document.querySelector('.period-select') as HTMLElementOrNull)?.innerText;
+    const date = document.querySelector<HTMLElement>('.period-select')?.innerText;
     return date ?? ''; // TODO: type check
   };
 
@@ -31,17 +29,17 @@ export const getAttendanceReportDocument = () => {
     const rows = Array.from(element.querySelectorAll('div.trow').values());
     const records = rows.map((row) => ({
       isDayOff: row.classList.contains('day-off'),
-      date: (row.querySelector('.date') as HTMLElement).innerText,
-      workingPattern: (row.querySelector('.working-pattern') as HTMLElementOrNull)?.innerText,
-      checkIn: (row.querySelector('.checkin-time') as HTMLElementOrNull)?.innerText,
-      checkOut: (row.querySelector('.checkout-time') as HTMLElementOrNull)?.innerText,
-      breakTime: (row.querySelector('.break-minutes') as HTMLElementOrNull)?.innerText,
-      workingTime: (row.querySelector('.working-minutes') as HTMLElementOrNull)?.innerText,
+      date: row.querySelector<HTMLElement>('.date')?.innerText ?? '', // TODO: type check
+      workingPattern: row.querySelector<HTMLElement>('.working-pattern')?.innerText,
+      checkIn: row.querySelector<HTMLElement>('.checkin-time')?.innerText,
+      checkOut: row.querySelector<HTMLElement>('.checkout-time')?.innerText,
+      breakTime: row.querySelector<HTMLElement>('.break-minutes')?.innerText,
+      workingTime: row.querySelector<HTMLElement>('.working-minutes')?.innerText,
       // note: row.querySelector('.note'), // FIXME:
       // flows: row.querySelector('.flows'), // FIXME:
-      holidayText: (
-        row.querySelector('.time-span-banner')?.querySelector('.bar.lh.rh') as HTMLElementOrNull
-      )?.innerText,
+      holidayText: row
+        .querySelector<HTMLElement>('.time-span-banner')
+        ?.querySelector<HTMLElement>('.bar.lh.rh')?.innerText,
     }));
 
     return records;
@@ -49,13 +47,13 @@ export const getAttendanceReportDocument = () => {
 
   const getReportSummary = () => {
     const mapping = new Map(
-      (
-        Array.from(
-          document.querySelectorAll('.report-summary > .row > .content > .column > .item'),
-        ) as HTMLElement[]
+      Array.from(
+        document.querySelectorAll<HTMLElement>(
+          '.report-summary > .row > .content > .column > .item',
+        ),
       ).map((element) => {
-        const name = (element.querySelector('.name') as HTMLElement).innerText as ReportSummaryName;
-        const value = (element.querySelector('.value') as HTMLElement).innerText;
+        const name = element.querySelector<HTMLElement>('.name')?.innerText as ReportSummaryName;
+        const value = element.querySelector<HTMLElement>('.value')?.innerText;
         return [name, value] as const;
       }),
     );
