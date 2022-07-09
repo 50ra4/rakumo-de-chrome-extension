@@ -20,6 +20,14 @@ export const timeStringToMinute = (str: string): number => {
   return hoursToMinutes(hour) + minute;
 };
 
+export const minutesToTimeString = (minutes: number): string => {
+  const isMinus = minutes < 0;
+  const _minutes = Math.abs(minutes);
+  const hour = Math.floor(_minutes / 60);
+  const restMinutes = String(_minutes % 60).padStart(2, '0');
+  return `${isMinus ? '-' : ''}${hour}:${restMinutes}`;
+};
+
 export const isMatchDateFormat = (str: string, dateFormat: DateFormat): boolean => {
   try {
     return isMatch(str, dateFormat, { locale: ja });
