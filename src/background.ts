@@ -1,4 +1,4 @@
-import { getAttendanceReportDocument } from './utils/document';
+import { getAttendanceReportDocument } from './document';
 
 const fetchCurrentActiveTab = async () =>
   await chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => tab);
