@@ -39,6 +39,7 @@ export default defineManifest(({ command, mode, ...manifest }) => ({
     'scripting',
     'activeTab',
     'declarativeContent',
+    'webRequest',
   ],
   content_scripts: [
     {
