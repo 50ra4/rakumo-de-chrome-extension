@@ -38,6 +38,22 @@ const fetchListContent = async (tabId?: number) => {
 //   }
 // });
 
+chrome.runtime.onInstalled.addListener(() => {
+  // declarativeContent
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
+    chrome.declarativeContent.onPageChanged.addRules([
+      {
+        conditions: [
+          new chrome.declarativeContent.PageStateMatcher({
+            pageUrl: { hostEquals: 'a-rakumo.appspot.com' },
+          }),
+        ],
+        actions: [new chrome.declarativeContent.ShowAction()],
+      },
+    ]);
+  });
+});
+
 chrome.runtime.onMessage.addListener((_message, _, sendResponse) => {
   // TODO: Switch to different processing depending on the message
   fetchCurrentActiveTab()
