@@ -1,7 +1,7 @@
 import { getDay, getDate, getMonth, format, compareAsc } from 'date-fns';
 import ja from 'date-fns/locale/ja';
 import { dateStringToDate, isMatchDateFormat, timeStringToMinute } from './date';
-import { AttendanceReportDocument } from './document';
+import { AttendanceReportDocument } from '../document';
 
 export const toAttendanceRecordMonth = (monthStr: string) =>
   dateStringToDate(monthStr, 'yyyy年 M月度');

@@ -13,7 +13,7 @@ import {
   createAttendanceRecordFilename,
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
-import { AttendanceReportDocument } from '../utils/document';
+import { AttendanceReportDocument } from '../document';
 
 const OUTPUT_FORMAT_OPTIONS = [
   {
