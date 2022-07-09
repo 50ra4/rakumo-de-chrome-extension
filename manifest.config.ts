@@ -10,6 +10,8 @@ const names = {
   serve: `[DEV] ${extensionName}`,
 } as const;
 
+const createIconFileSuffix = (command: 'build' | 'serve') => (command === 'serve' ? '-dev' : '');
+
 // import to `vite.config.ts`
 export default defineManifest(({ command, mode, ...manifest }) => ({
   ...manifest,
@@ -18,9 +20,9 @@ export default defineManifest(({ command, mode, ...manifest }) => ({
   name: names[command],
   description: 'Get working hours from rakumo',
   icons: {
-    '16': 'public/icons/icon16.png',
-    '48': 'public/icons/icon48.png',
-    '128': 'public/icons/icon128.png',
+    '16': `public/icons/icon16${createIconFileSuffix(command)}.png`,
+    '48': `public/icons/icon48${createIconFileSuffix(command)}.png`,
+    '128': `public/icons/icon128${createIconFileSuffix(command)}.png`,
   },
   action: {
     default_popup: 'src/popup/index.html',

@@ -8,7 +8,7 @@ import manifest from './manifest.config';
 export default defineConfig(({ command, ...config }) => ({
   ...config,
   build: {
-    outDir: command === 'build' ? 'dist' : '.vite-dev',
+    outDir: command === 'build' ? 'extension' : 'dist',
     rollupOptions: {
       input: {
         // output file at '/index.html'
