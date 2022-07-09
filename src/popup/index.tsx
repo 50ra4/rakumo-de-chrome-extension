@@ -9,6 +9,8 @@ import {
   toWorkingMinutes,
   calcExpectedReportSummary,
   ReportSummary,
+  toAttendanceRecordMonth,
+  createAttendanceRecordFilename,
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
 import { AttendanceReportDocument } from '../utils/document';
@@ -44,9 +46,10 @@ const Popup = () => {
     >({ name: 'message' }, (response) => {
       console.log(response);
 
+      const displayedMonth = toAttendanceRecordMonth(response.data.displayedMonth);
       const records = toAttendanceRecords(response.data);
       const blob = outputFormat.type === 'csv' ? generateCsv(records) : generateTextPlain(records);
-      const fileName = `report.${outputFormat.extension}`;
+      const fileName = createAttendanceRecordFilename(displayedMonth, outputFormat.extension);
 
       const link = document.createElement('a');
       link.href = URL.createObjectURL(new Blob([blob]));

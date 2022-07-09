@@ -3,9 +3,12 @@ import ja from 'date-fns/locale/ja';
 import { dateStringToDate, isMatchDateFormat, timeStringToMinute } from './date';
 import { AttendanceReportDocument } from './document';
 
+export const toAttendanceRecordMonth = (monthStr: string) =>
+  dateStringToDate(monthStr, 'yyyy年 M月度');
+
 // NOTE: getAttendanceReportDocument で同時に行ったら、参照エラーになったので、popup側で呼び出すように修正した
 export const toAttendanceRecords = (document: AttendanceReportDocument) => {
-  const displayedMonth = dateStringToDate(document.displayedMonth, 'yyyy年 M月度');
+  const displayedMonth = toAttendanceRecordMonth(document.displayedMonth);
   const month = getMonth(displayedMonth) + 1;
 
   return document.listContent
@@ -207,4 +210,9 @@ export const generateTextPlain = (records: AttendanceRecord[]) => {
   });
 
   return new Blob([lines.join('\n')], { type: 'text/plain' });
+};
+
+export const createAttendanceRecordFilename = (month: Date, extension: string) => {
+  const dateStr = format(month, 'yyyy-MM');
+  return `${dateStr}_report.${extension}`;
 };
