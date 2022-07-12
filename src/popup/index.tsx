@@ -41,9 +41,9 @@ const Popup = () => {
 
   const onClickExport = () => {
     chrome.runtime.sendMessage<
-      { name: 'message' },
+      { name: 'popup_export' },
       { status: 'done'; data: AttendanceReportDocument }
-    >({ name: 'message' }, (response) => {
+    >({ name: 'popup_export' }, (response) => {
       console.log(response);
 
       const displayedMonth = toAttendanceRecordMonth(response.data.displayedMonth);
