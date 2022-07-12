@@ -12,7 +12,15 @@ const App = () => {
 
       details.getContent((content, _) => {
         const response = JSON.parse(content);
-        console.log(`content aaas ${details.request.url}`, response);
+        console.log(`${details.request.url} content`, response);
+        chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+          if (!tab?.id) {
+            return;
+          }
+          chrome.tabs.sendMessage(tab.id, { data: response, from: 'devtools.js' }, (response) => {
+            console.log(response);
+          });
+        });
       });
     });
   }, []);
