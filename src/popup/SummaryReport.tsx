@@ -7,18 +7,30 @@ type SummaryReportItem = {
 
 type Props = {
   className?: string;
+  title: string;
   items: SummaryReportItem[];
 };
 
-export const SummaryReport = ({ className, items }: Props) => {
+export const SummaryReport = ({ className, title, items }: Props) => {
   return (
-    <div className={className}>
-      {items.map(({ label, value }) => (
-        <div key={label} style={{ display: 'flex' }}>
+    <section className={className}>
+      <h3 style={{ margin: '10px 0' }}>{title}</h3>
+      {items.map(({ label, value }, i) => (
+        <div
+          key={label}
+          style={{
+            display: 'flex',
+            height: '20px',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            borderBottom: '1px solid #4c4b4b',
+            backgroundColor: i % 2 ? '#eaf0ec' : '#ffffff',
+          }}
+        >
           <div>{label}</div>
           <div>{value}</div>
         </div>
       ))}
-    </div>
+    </section>
   );
 };

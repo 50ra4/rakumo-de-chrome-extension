@@ -151,7 +151,9 @@ const Popup = () => {
         />
       </div>
       <button onClick={onClickExpectedSummary}>予測時間を表示する</button>
-      <div>{!!expectedWorkingItems.length && <SummaryReport items={expectedWorkingItems} />}</div>
+      {!!expectedWorkingItems.length && (
+        <SummaryReport title="表示月の勤怠時間の予想" items={expectedWorkingItems} />
+      )}
     </div>
   );
 };
