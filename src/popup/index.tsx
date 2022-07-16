@@ -14,6 +14,7 @@ import {
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
 import { AttendanceReportDocument } from '../document';
+import { SummaryReport } from './SummaryReport';
 
 const OUTPUT_FORMAT_OPTIONS = [
   {
@@ -150,15 +151,7 @@ const Popup = () => {
         />
       </div>
       <button onClick={onClickExpectedSummary}>予測時間を表示する</button>
-      <div>
-        {!!expectedWorkingItems.length &&
-          expectedWorkingItems.map(({ label, value }) => (
-            <div key={label} style={{ display: 'flex' }}>
-              <div>{label}</div>
-              <div>{value}</div>
-            </div>
-          ))}
-      </div>
+      <div>{!!expectedWorkingItems.length && <SummaryReport items={expectedWorkingItems} />}</div>
     </div>
   );
 };
