@@ -14,6 +14,7 @@ import {
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
 import { AttendanceReportDocument } from '../document';
+import { SummaryReport } from './SummaryReport';
 
 const OUTPUT_FORMAT_OPTIONS = [
   {
@@ -128,18 +129,27 @@ const Popup = () => {
         minHeight: '320px',
       }}
     >
-      <div style={{ display: 'flex', marginBottom: '8px' }}>
-        <select value={outputFormat.type} onChange={onChangeFormat}>
+      <div style={{ display: 'flex', marginBottom: '8px', alignItems: 'center' }}>
+        <select
+          value={outputFormat.type}
+          onChange={onChangeFormat}
+          style={{ marginRight: '4px', width: '120px' }}
+        >
           {OUTPUT_FORMAT_OPTIONS.map(({ type, name }) => (
             <option key={type} value={type}>
               {name}で
             </option>
           ))}
         </select>
-        <button onClick={onClickExport}>勤怠情報を出力する</button>
+        <button onClick={onClickExport} style={{ flex: '1 1 auto' }}>
+          勤怠情報を出力する
+        </button>
       </div>
-      <div style={{ display: 'flex' }}>
-        <label htmlFor="working-time">1日の勤務時間</label>
+      <hr />
+      <div style={{ display: 'flex', marginBottom: '8px', alignItems: 'center' }}>
+        <label htmlFor="working-time" style={{ marginRight: '4px', width: '120px' }}>
+          1日の勤務時間
+        </label>
         <input
           type="text"
           id="working-time"
@@ -147,18 +157,15 @@ const Popup = () => {
           placeholder="H:mm 形式で入力"
           value={workingTime}
           onChange={onChangeWorkingTime}
+          style={{ flex: '1 1 auto' }}
         />
       </div>
-      <button onClick={onClickExpectedSummary}>予測時間を表示する</button>
-      <div>
-        {!!expectedWorkingItems.length &&
-          expectedWorkingItems.map(({ label, value }) => (
-            <div key={label} style={{ display: 'flex' }}>
-              <div>{label}</div>
-              <div>{value}</div>
-            </div>
-          ))}
-      </div>
+      <button onClick={onClickExpectedSummary} style={{ minWidth: '100%' }}>
+        予測時間を表示する
+      </button>
+      {!!expectedWorkingItems.length && (
+        <SummaryReport title="表示月の勤怠時間の予想" items={expectedWorkingItems} />
+      )}
     </div>
   );
 };
