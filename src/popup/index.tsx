@@ -15,6 +15,7 @@ import {
 import { minutesToTimeString } from '../utils/date';
 import { AttendanceReportDocument } from '../document';
 import { SummaryReport } from './SummaryReport';
+import { sendMessage } from '../sendMessage';
 
 const OUTPUT_FORMAT_OPTIONS = [
   {
@@ -30,7 +31,6 @@ const OUTPUT_FORMAT_OPTIONS = [
 ] as const;
 
 type OutputFormat = typeof OUTPUT_FORMAT_OPTIONS[number];
-
 type ExpectedReportSummary = ReturnType<typeof calcExpectedReportSummary> & ReportSummary;
 
 const Popup = () => {
@@ -41,38 +41,48 @@ const Popup = () => {
   );
 
   const onClickExport = () => {
-    chrome.runtime.sendMessage<
-      { name: 'message' },
-      { status: 'done'; data: AttendanceReportDocument }
-    >({ name: 'message' }, (response) => {
-      console.log(response);
+    sendMessage<AttendanceReportDocument>(
+      { name: 'FETCH_ATTENDANCE_REPORT_DOCUMENT' },
+      (response) => {
+        console.log(response);
 
-      const displayedMonth = toAttendanceRecordMonth(response.data.displayedMonth);
-      const records = toAttendanceRecords(response.data);
-      const blob = outputFormat.type === 'csv' ? generateCsv(records) : generateTextPlain(records);
-      const fileName = createAttendanceRecordFilename(displayedMonth, outputFormat.extension);
+        if (response.status !== 'success') {
+          window.alert('エラーが発生しました!');
+          return;
+        }
 
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(new Blob([blob]));
-      link.setAttribute('download', fileName);
-      document.body.appendChild(link);
-      link.click();
-      link.parentNode?.removeChild(link);
-    });
+        const displayedMonth = toAttendanceRecordMonth(response.data.displayedMonth);
+        const records = toAttendanceRecords(response.data);
+        const blob =
+          outputFormat.type === 'csv' ? generateCsv(records) : generateTextPlain(records);
+        const fileName = createAttendanceRecordFilename(displayedMonth, outputFormat.extension);
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([blob]));
+        link.setAttribute('download', fileName);
+        document.body.appendChild(link);
+        link.click();
+        link.parentNode?.removeChild(link);
+      },
+    );
   };
 
   const onClickExpectedSummary = () => {
-    chrome.runtime.sendMessage<
-      { name: 'message' },
-      { status: 'done'; data: AttendanceReportDocument }
-    >({ name: 'message' }, (response) => {
-      const summary = toReportSummary(response.data);
-      const report = calcExpectedReportSummary({
-        dailyWorkingMinutes: toWorkingMinutes(workingTime),
-        summary,
-      });
-      setExpectedReportSummary({ ...report, ...summary });
-    });
+    sendMessage<AttendanceReportDocument>(
+      { name: 'FETCH_ATTENDANCE_REPORT_DOCUMENT' },
+      (response) => {
+        if (response.status !== 'success') {
+          window.alert('エラーが発生しました!');
+          return;
+        }
+        const summary = toReportSummary(response.data);
+        const report = calcExpectedReportSummary({
+          dailyWorkingMinutes: toWorkingMinutes(workingTime),
+          summary,
+        });
+        setExpectedReportSummary({ ...report, ...summary });
+      },
+    );
   };
 
   const expectedWorkingItems = useMemo(() => {

@@ -1,4 +1,5 @@
 import { getAttendanceReportDocument } from './document';
+import { OnMessageListenerParameter } from './sendMessage';
 
 const fetchCurrentActiveTab = async () =>
   await chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => tab);
@@ -54,16 +55,33 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.runtime.onMessage.addListener((_message, _, sendResponse) => {
-  // TODO: Switch to different processing depending on the message
-  fetchCurrentActiveTab()
-    .then((tab) => fetchListContent(tab?.id))
-    .then((data) => {
-      // TODO: add type
-      sendResponse({ status: 'done', data });
-    })
-    .catch((err) => {
-      sendResponse({ status: 'error', err });
-    });
+chrome.runtime.onMessage.addListener((...args: OnMessageListenerParameter) => {
+  const [request, _, sendResponse] = args;
+  switch (request.name) {
+    case 'FETCH_ACTIVE_TABS':
+      fetchCurrentActiveTab()
+        .then((data) => {
+          sendResponse({ status: 'success', data });
+        })
+        .catch((error) => {
+          sendResponse({ status: 'error', error });
+        });
+      break;
+
+    case 'FETCH_ATTENDANCE_REPORT_DOCUMENT':
+      fetchCurrentActiveTab()
+        .then((tab) => fetchListContent(tab?.id))
+        .then((data) => {
+          sendResponse({ status: 'success', data });
+        })
+        .catch((error) => {
+          sendResponse({ status: 'error', error });
+        });
+      break;
+
+    default:
+      break;
+  }
+
   return true;
 });
