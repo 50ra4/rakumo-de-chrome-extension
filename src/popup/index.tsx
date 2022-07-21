@@ -1,4 +1,5 @@
-import React, { StrictMode, useMemo, useState } from 'react';
+import { format } from 'date-fns';
+import React, { StrictMode, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { useChromeStorage } from '../hooks/useChromeStorage';
 import {
@@ -8,14 +9,12 @@ import {
   toReportSummary,
   toWorkingMinutes,
   calcExpectedReportSummary,
-  ReportSummary,
   toAttendanceRecordMonth,
   createAttendanceRecordFilename,
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
-import { AttendanceReportDocument } from '../document';
 import { SummaryReport } from './SummaryReport';
-import { sendMessage } from '../sendMessage';
+import { useAttendanceReportDocument } from './useAttendanceReportDocument';
 
 const OUTPUT_FORMAT_OPTIONS = [
   {
@@ -31,76 +30,76 @@ const OUTPUT_FORMAT_OPTIONS = [
 ] as const;
 
 type OutputFormat = typeof OUTPUT_FORMAT_OPTIONS[number];
-type ExpectedReportSummary = ReturnType<typeof calcExpectedReportSummary> & ReportSummary;
 
 const Popup = () => {
   const [outputFormat, setOutputFormat] = useState<OutputFormat>(OUTPUT_FORMAT_OPTIONS[0]);
   const [workingTime, setWorkingTime] = useChromeStorage('working-time', '');
-  const [expectedReportSummary, setExpectedReportSummary] = useState<ExpectedReportSummary | null>(
-    null,
-  );
+
+  const { attendanceReportDocument, fetchAttendanceReportDocument, error, updatedAt } =
+    useAttendanceReportDocument();
+
+  useEffect(() => {
+    fetchAttendanceReportDocument();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const { attendanceRecordMonth, attendanceRecords } = useMemo(() => {
+    return {
+      attendanceRecordMonth: attendanceReportDocument
+        ? toAttendanceRecordMonth(attendanceReportDocument.displayedMonth)
+        : undefined,
+      attendanceRecords: attendanceReportDocument
+        ? toAttendanceRecords(attendanceReportDocument)
+        : undefined,
+    };
+  }, [attendanceReportDocument]);
 
   const onClickExport = () => {
-    sendMessage<AttendanceReportDocument>(
-      { name: 'FETCH_ATTENDANCE_REPORT_DOCUMENT' },
-      (response) => {
-        console.log(response);
+    if (error) {
+      window.alert('エラーが発生しました!');
+      return;
+    }
+    if (!attendanceRecordMonth || !attendanceRecords) {
+      window.alert('更新ボタンを押して再度取得してください!');
+      return;
+    }
 
-        if (response.status !== 'success') {
-          window.alert('エラーが発生しました!');
-          return;
-        }
+    const blob =
+      outputFormat.type === 'csv'
+        ? generateCsv(attendanceRecords)
+        : generateTextPlain(attendanceRecords);
+    const fileName = createAttendanceRecordFilename(attendanceRecordMonth, outputFormat.extension);
 
-        const displayedMonth = toAttendanceRecordMonth(response.data.displayedMonth);
-        const records = toAttendanceRecords(response.data);
-        const blob =
-          outputFormat.type === 'csv' ? generateCsv(records) : generateTextPlain(records);
-        const fileName = createAttendanceRecordFilename(displayedMonth, outputFormat.extension);
-
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(new Blob([blob]));
-        link.setAttribute('download', fileName);
-        document.body.appendChild(link);
-        link.click();
-        link.parentNode?.removeChild(link);
-      },
-    );
-  };
-
-  const onClickExpectedSummary = () => {
-    sendMessage<AttendanceReportDocument>(
-      { name: 'FETCH_ATTENDANCE_REPORT_DOCUMENT' },
-      (response) => {
-        if (response.status !== 'success') {
-          window.alert('エラーが発生しました!');
-          return;
-        }
-        const summary = toReportSummary(response.data);
-        const report = calcExpectedReportSummary({
-          dailyWorkingMinutes: toWorkingMinutes(workingTime),
-          summary,
-        });
-        setExpectedReportSummary({ ...report, ...summary });
-      },
-    );
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(new Blob([blob]));
+    link.setAttribute('download', fileName);
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
   };
 
   const expectedWorkingItems = useMemo(() => {
-    if (!expectedReportSummary) {
+    if (!attendanceReportDocument) {
       return [];
     }
 
+    const summary = toReportSummary(attendanceReportDocument);
     const {
       expectedRemainingActualWorkingMinutes,
       expectedOvertimeWorkingMinutes,
       expectedActualWorkingMinutes,
+    } = calcExpectedReportSummary({
+      dailyWorkingMinutes: toWorkingMinutes(workingTime),
+      summary,
+    });
+    const {
       prescribedWorkingDays,
       prescribedWorkingTime,
       actualWorkingDays,
       actualWorkingTime,
       overtimeWorkTime,
       leavePaidTime,
-    } = expectedReportSummary;
+    } = summary;
 
     return [
       {
@@ -120,7 +119,11 @@ const Popup = () => {
       { label: '時間外労働時間', value: overtimeWorkTime ?? 'N/A' },
       { label: '有給取得時間 (年休・特休など)', value: leavePaidTime ?? 'N/A' },
     ];
-  }, [expectedReportSummary]);
+  }, [attendanceReportDocument, workingTime]);
+
+  const onClickReload = () => {
+    fetchAttendanceReportDocument();
+  };
 
   const onChangeFormat = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selected =
@@ -139,6 +142,9 @@ const Popup = () => {
         minHeight: '320px',
       }}
     >
+      <button onClick={onClickReload} style={{ minWidth: '100%', marginBottom: '8px' }}>
+        データを再取得する
+      </button>
       <div style={{ display: 'flex', marginBottom: '8px', alignItems: 'center' }}>
         <select
           value={outputFormat.type}
@@ -170,11 +176,12 @@ const Popup = () => {
           style={{ flex: '1 1 auto' }}
         />
       </div>
-      <button onClick={onClickExpectedSummary} style={{ minWidth: '100%' }}>
-        予測時間を表示する
-      </button>
-      {!!expectedWorkingItems.length && (
-        <SummaryReport title="表示月の勤怠時間の予想" items={expectedWorkingItems} />
+      {!!expectedWorkingItems.length && !!attendanceRecordMonth && (
+        <SummaryReport
+          title={`${format(attendanceRecordMonth, 'yyyy年M月')}の勤怠時間の予想`}
+          items={expectedWorkingItems}
+          updatedAt={`${format(updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
+        />
       )}
     </div>
   );
