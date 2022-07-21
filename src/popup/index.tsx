@@ -40,6 +40,14 @@ const Popup = () => {
 
   useEffect(() => {
     fetchAttendanceReportDocument();
+
+    const timerId = window.setInterval(() => {
+      fetchAttendanceReportDocument();
+    }, 30000);
+
+    return () => {
+      window.clearInterval(timerId);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
