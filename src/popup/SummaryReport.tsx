@@ -9,9 +9,10 @@ type Props = {
   className?: string;
   title: string;
   items: SummaryReportItem[];
+  updatedAt: string;
 };
 
-export const SummaryReport = ({ className, title, items }: Props) => {
+export const SummaryReport = ({ className, title, items, updatedAt }: Props) => {
   return (
     <section className={className}>
       <h3 style={{ margin: '10px 0' }}>{title}</h3>
@@ -31,6 +32,7 @@ export const SummaryReport = ({ className, title, items }: Props) => {
           <div>{value}</div>
         </div>
       ))}
+      <p style={{ textAlign: 'right' }}>{updatedAt}</p>
     </section>
   );
 };
