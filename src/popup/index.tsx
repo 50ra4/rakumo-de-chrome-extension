@@ -110,13 +110,13 @@ const Popup = () => {
     } = summary;
 
     return [
+      { label: '(予測)時間外勤務時間', value: minutesToTimeString(expectedOvertimeWorkingMinutes) },
+      // TODO: 申請済みの時間外勤務時間
+      { label: '(予測)実労働時間', value: minutesToTimeString(expectedActualWorkingMinutes) },
       {
-        label: '予想の残実労働時間',
+        label: '(予測)残りの実労働時間',
         value: minutesToTimeString(expectedRemainingActualWorkingMinutes),
       },
-      { label: '予想の実労働時間', value: minutesToTimeString(expectedActualWorkingMinutes) },
-      { label: '予想の時間外勤務時間', value: minutesToTimeString(expectedOvertimeWorkingMinutes) },
-      // TODO: 申請済みの時間外勤務時間
       {
         label: '所定労働日数',
         value: prescribedWorkingDays ? `${prescribedWorkingDays}日` : 'N/A',
