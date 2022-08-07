@@ -106,3 +106,6 @@ dist
 # vite serve file
 extension/
 rakumo-de-extension.zip
+
+# document for github pages
+docs/
