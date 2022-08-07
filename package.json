@@ -13,7 +13,10 @@
     "prepare": "husky install",
     "test": "jest -c ./jest.config.ts",
     "check-type": "tsc --noEmit",
-    "zip": "npm run build && rm -f extension.zip && zip -r rakumo-de-extension.zip extension"
+    "zip": "npm run build && rm -f extension.zip && zip -r rakumo-de-extension.zip extension",
+    "docs": "npm run docs:clean && npm run docs:gen",
+    "docs:clean": "rm -rf docs",
+    "docs:gen": "cp -r tools/gh-pages docs && npm run zip && mv rakumo-de-extension.zip docs"
   },
   "repository": {
     "type": "git",
