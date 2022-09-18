@@ -1,7 +1,7 @@
 import { format } from 'date-fns';
 import React, { StrictMode, useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { useChromeStorage } from '../hooks/useChromeStorage';
+import { useChromeStorage } from './hooks/useChromeStorage';
 import {
   generateCsv,
   toAttendanceRecords,
@@ -11,10 +11,10 @@ import {
   calcExpectedReportSummary,
   toAttendanceRecordMonth,
   createAttendanceRecordFilename,
-} from '../utils/attendance';
-import { minutesToTimeString } from '../utils/date';
-import { SummaryReport } from './SummaryReport';
-import { useAttendanceReportDocument } from './useAttendanceReportDocument';
+} from './utils/attendance';
+import { minutesToTimeString } from './utils/date';
+import { SummaryReport } from './components/SummaryReport';
+import { useAttendanceReportDocument } from './hooks/useAttendanceReportDocument';
 
 const OUTPUT_FORMAT_OPTIONS = [
   {
