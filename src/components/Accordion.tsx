@@ -29,6 +29,7 @@ export function Accordion({ id, title, disabled, defaultExpanded, children }: Pr
           padding: '4px',
           backgroundColor: '#ffffff',
           border: 'none',
+          cursor: disabled ? 'default' : 'pointer',
         }}
         id={headerId}
         aria-controls={sectionId}
@@ -59,6 +60,7 @@ export function Accordion({ id, title, disabled, defaultExpanded, children }: Pr
             color: '#888a8d',
             fontSize: '12px',
             fontWeight: 'bold',
+            width: '36px',
           }}
         >
           {isExpanded ? '閉じる' : '開く'}
