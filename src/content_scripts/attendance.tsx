@@ -92,10 +92,10 @@ const Root = () => {
     >
       <Accordion
         id="rakumo-de-extension-attendance-accordion"
-        title="予想時間"
+        title="拡張機能"
         defaultExpanded={true}
       >
-        <div style={{ padding: '0 8px', maxWidth: '320px' }}>
+        <div style={{ maxWidth: '320px' }}>
           <button onClick={reload} style={{ width: '100%', marginBottom: '8px' }}>
             データを再取得する
           </button>
@@ -127,7 +127,7 @@ const render = (parentElement: HTMLElement) => {
   const root = document.createElement('div');
   root.setAttribute('id', rootId);
   root.style.setProperty('background-color', '#ffffff');
-  root.style.setProperty('padding', '8px 32px');
+  root.style.setProperty('padding', '8px 32px 0px');
 
   parentElement.prepend(root);
   createRoot(root).render(

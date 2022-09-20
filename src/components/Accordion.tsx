@@ -60,10 +60,10 @@ export function Accordion({ id, title, disabled, defaultExpanded, children }: Pr
             color: '#888a8d',
             fontSize: '12px',
             fontWeight: 'bold',
-            width: '36px',
+            width: '72px',
           }}
         >
-          {isExpanded ? '閉じる' : '開く'}
+          {isExpanded ? '非表示にする' : '表示する'}
         </span>
       </button>
       <div
