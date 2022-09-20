@@ -145,7 +145,7 @@ const Root = () => {
     }
 
     downloadRecord(data.month, data.records);
-  }, [downloadRecord]);
+  }, [data, downloadRecord]);
 
   return (
     <div
