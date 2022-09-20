@@ -8,9 +8,6 @@ import { useChromeStorage } from '../hooks/useChromeStorage';
 import {
   calcExpectedReportSummary,
   toWorkingMinutes,
-  createAttendanceRecordFilename,
-  generateCsv,
-  generateTextPlain,
   isValidWorkingMinutesFormat,
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
@@ -22,6 +19,11 @@ import {
   MonthlyAttendanceSummary,
   getMonthlyAttendanceSummary,
 } from '../document';
+import {
+  generateCsv,
+  generateTextPlain,
+  createAttendanceRecordFilename,
+} from '../utils/outputFile';
 
 type MonthlyRecord = MonthlyAttendanceRecord & {
   summary: MonthlyAttendanceSummary;
