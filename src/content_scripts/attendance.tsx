@@ -125,22 +125,22 @@ const Root = () => {
     } = data.summary;
 
     return [
-      { label: '(予測)時間外勤務時間', value: minutesToTimeString(expectedOvertimeWorkingMinutes) },
-      // TODO: 申請済みの時間外勤務時間を追加する
-      { label: '(予測)実労働時間', value: minutesToTimeString(expectedActualWorkingMinutes) },
+      { label: '[予測]時間外勤務時間', value: minutesToTimeString(expectedOvertimeWorkingMinutes) },
       {
-        label: '(予測)残りの実労働時間',
+        label: '[予測]残りの実労働時間',
         value: minutesToTimeString(expectedRemainingActualWorkingMinutes),
       },
+      // TODO: 申請済みの時間外勤務時間を追加する
+      { label: '[予測]実労働時間（A）', value: minutesToTimeString(expectedActualWorkingMinutes) },
+      { label: '有給取得時間 (年休・特休など)（B）', value: leavePaidTime ?? 'N/A' },
+      { label: '所定労働時間（C）', value: prescribedWorkingTime ?? 'N/A' },
       {
         label: '所定労働日数',
         value: prescribedWorkingDays ? `${prescribedWorkingDays}日` : 'N/A',
       },
-      { label: '所定労働時間', value: prescribedWorkingTime ?? 'N/A' },
       { label: '実労働日数', value: actualWorkingDays ? `${actualWorkingDays}日` : 'N/A' },
-      { label: '実労働時間', value: actualWorkingTime ?? 'N/A' },
+      { label: '実労働時間（A）', value: actualWorkingTime ?? 'N/A' },
       { label: '時間外労働時間', value: overtimeWorkTime ?? 'N/A' },
-      { label: '有給取得時間 (年休・特休など)', value: leavePaidTime ?? 'N/A' },
     ];
   }, [data, workingTime]);
 
