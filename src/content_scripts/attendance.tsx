@@ -4,30 +4,41 @@ import { createRoot } from 'react-dom/client';
 import { format } from 'date-fns';
 import { SummaryReport } from '../components/SummaryReport';
 import { TextInput } from '../components/TextInput';
-import { AttendanceReportDocument, getAttendanceReportDocument } from '../document';
 import { useChromeStorage } from '../hooks/useChromeStorage';
 import {
-  toReportSummary,
   calcExpectedReportSummary,
   toWorkingMinutes,
-  toAttendanceRecordMonth,
   createAttendanceRecordFilename,
   generateCsv,
   generateTextPlain,
-  AttendanceRecord,
-  toAttendanceRecords,
   isValidWorkingMinutesFormat,
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
 import { Accordion } from '../components/Accordion';
 import { SelectInput } from '../components/SelectInput';
+import {
+  MonthlyAttendanceRecord,
+  getMonthlyAttendanceRecord,
+  AttendanceRecord,
+  ReportSummary,
+  getMonthlyAttendanceSummary,
+} from '../document';
 
-const useFetchAttendanceRecord = () => {
-  const [state, setState] = useState<(AttendanceReportDocument & { updatedAt: Date }) | null>(null);
+type MonthlyRecord = MonthlyAttendanceRecord & {
+  summary: ReportSummary;
+};
+
+const useFetchMonthlyRecord = () => {
+  const [state, setState] = useState<(MonthlyRecord & { updatedAt: Date }) | null>(null);
 
   const reload = useCallback(() => {
-    const data = getAttendanceReportDocument();
-    setState({ ...data, updatedAt: new Date() });
+    const record = getMonthlyAttendanceRecord();
+    const summary = getMonthlyAttendanceSummary();
+    if (!record) {
+      setState(null);
+      return;
+    }
+    setState({ ...record, summary, updatedAt: new Date() });
   }, []);
 
   return { data: state, reload };
@@ -76,7 +87,7 @@ const useOutputAttendanceRecord = () => {
 
 const Root = () => {
   const [workingTime, setWorkingTime] = useChromeStorage('working-time', '');
-  const { reload, data } = useFetchAttendanceRecord();
+  const { reload, data } = useFetchMonthlyRecord();
   const { outputFormat, options, downloadRecord, changeFormat } = useOutputAttendanceRecord();
 
   useEffect(() => {
@@ -85,24 +96,18 @@ const Root = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const displayedMonth = useMemo(
-    () => (data ? toAttendanceRecordMonth(data.displayedMonth) : undefined),
-    [data],
-  );
-
   const items = useMemo(() => {
     if (!data || !workingTime || !isValidWorkingMinutesFormat(workingTime)) {
       return [];
     }
 
-    const summary = toReportSummary(data);
     const {
       expectedRemainingActualWorkingMinutes,
       expectedOvertimeWorkingMinutes,
       expectedActualWorkingMinutes,
     } = calcExpectedReportSummary({
       dailyWorkingMinutes: toWorkingMinutes(workingTime),
-      summary,
+      summary: data.summary,
     });
     const {
       prescribedWorkingDays,
@@ -111,7 +116,7 @@ const Root = () => {
       actualWorkingTime,
       overtimeWorkTime,
       leavePaidTime,
-    } = summary;
+    } = data.summary;
 
     return [
       { label: '(予測)時間外勤務時間', value: minutesToTimeString(expectedOvertimeWorkingMinutes) },
@@ -134,13 +139,13 @@ const Root = () => {
   }, [data, workingTime]);
 
   const onClickExport = useCallback(() => {
-    if (!displayedMonth || !data) {
+    if (!data) {
       window.alert('【エラー】更新ボタンを押して再取得してください!');
       return;
     }
 
-    downloadRecord(displayedMonth, toAttendanceRecords(data));
-  }, [data, displayedMonth, downloadRecord]);
+    downloadRecord(data.month, data.records);
+  }, [downloadRecord]);
 
   return (
     <div
@@ -166,9 +171,9 @@ const Root = () => {
               onChange={setWorkingTime}
             />
           </div>
-          {!!displayedMonth && !!data && !!items.length && (
+          {!!data && !!items.length && (
             <SummaryReport
-              title={`${format(displayedMonth, 'yyyy年M月')}の勤怠時間の予想`}
+              title={`${format(data.month, 'yyyy年M月')}の勤怠時間の予想`}
               items={items}
               updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
             />
