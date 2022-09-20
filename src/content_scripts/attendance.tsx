@@ -16,6 +16,7 @@ import {
   generateTextPlain,
   AttendanceRecord,
   toAttendanceRecords,
+  isValidWorkingMinutesFormat,
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
 import { Accordion } from '../components/Accordion';
@@ -90,7 +91,7 @@ const Root = () => {
   );
 
   const items = useMemo(() => {
-    if (!data || !workingTime) {
+    if (!data || !workingTime || !isValidWorkingMinutesFormat(workingTime)) {
       return [];
     }
 
@@ -149,7 +150,7 @@ const Root = () => {
     >
       <Accordion
         id="rakumo-de-extension-attendance-accordion"
-        title="拡張機能"
+        title="rakumo-de-extension"
         defaultExpanded={false}
       >
         <div style={{ maxWidth: '320px' }}>
