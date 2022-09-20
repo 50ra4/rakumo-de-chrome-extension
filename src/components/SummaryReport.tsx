@@ -32,7 +32,7 @@ export const SummaryReport = ({ className, title, items, updatedAt }: Props) => 
           <div>{value}</div>
         </div>
       ))}
-      <p style={{ textAlign: 'right' }}>{updatedAt}</p>
+      <p style={{ margin: '0', marginTop: '2px', textAlign: 'right' }}>{updatedAt}</p>
     </section>
   );
 };

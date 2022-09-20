@@ -11,11 +11,17 @@ import {
   calcExpectedReportSummary,
   toWorkingMinutes,
   toAttendanceRecordMonth,
+  createAttendanceRecordFilename,
+  generateCsv,
+  generateTextPlain,
+  AttendanceRecord,
+  toAttendanceRecords,
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
 import { Accordion } from '../components/Accordion';
+import { SelectInput } from '../components/SelectInput';
 
-const useAttendanceRecord = () => {
+const useFetchAttendanceRecord = () => {
   const [state, setState] = useState<(AttendanceReportDocument & { updatedAt: Date }) | null>(null);
 
   const reload = useCallback(() => {
@@ -26,9 +32,51 @@ const useAttendanceRecord = () => {
   return { data: state, reload };
 };
 
+type OutputFormat = { value: 'csv' | 'text' } & { name: string; extension: string };
+const OUTPUT_FORMAT_OPTIONS: OutputFormat[] = [
+  {
+    value: 'csv',
+    name: 'csv形式',
+    extension: 'csv',
+  },
+  {
+    value: 'text',
+    name: 'text形式',
+    extension: 'txt',
+  },
+];
+
+const useOutputAttendanceRecord = () => {
+  const [outputFormat, setOutputFormat] = useState<OutputFormat>(OUTPUT_FORMAT_OPTIONS[0]);
+
+  const changeFormat = useCallback((value: OutputFormat['value']) => {
+    const selected =
+      OUTPUT_FORMAT_OPTIONS.find((option) => option.value === value) ?? OUTPUT_FORMAT_OPTIONS[0];
+    setOutputFormat(selected);
+  }, []);
+
+  const downloadRecord = useCallback(
+    (month: Date, records: AttendanceRecord[]) => {
+      const blob = outputFormat.value === 'csv' ? generateCsv(records) : generateTextPlain(records);
+      const fileName = createAttendanceRecordFilename(month, outputFormat.extension);
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(new Blob([blob]));
+      link.setAttribute('download', fileName);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    },
+    [outputFormat.extension, outputFormat.value],
+  );
+
+  return { outputFormat, options: OUTPUT_FORMAT_OPTIONS, downloadRecord, changeFormat };
+};
+
 const Root = () => {
   const [workingTime, setWorkingTime] = useChromeStorage('working-time', '');
-  const { reload, data } = useAttendanceRecord();
+  const { reload, data } = useFetchAttendanceRecord();
+  const { outputFormat, options, downloadRecord, changeFormat } = useOutputAttendanceRecord();
 
   useEffect(() => {
     // TODO: 月が変わったとき、最終集計時刻が変わったときに再度取得する
@@ -84,6 +132,15 @@ const Root = () => {
     ];
   }, [data, workingTime]);
 
+  const onClickExport = useCallback(() => {
+    if (!displayedMonth || !data) {
+      window.alert('【エラー】更新ボタンを押して再取得してください!');
+      return;
+    }
+
+    downloadRecord(displayedMonth, toAttendanceRecords(data));
+  }, [data, displayedMonth, downloadRecord]);
+
   return (
     <div
       style={{
@@ -93,10 +150,10 @@ const Root = () => {
       <Accordion
         id="rakumo-de-extension-attendance-accordion"
         title="拡張機能"
-        defaultExpanded={true}
+        defaultExpanded={false}
       >
         <div style={{ maxWidth: '320px' }}>
-          <button onClick={reload} style={{ width: '100%', marginBottom: '8px' }}>
+          <button onClick={reload} style={{ marginBottom: '8px' }}>
             データを再取得する
           </button>
           <div style={{ marginBottom: '4px' }}>
@@ -115,6 +172,12 @@ const Root = () => {
               updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
             />
           )}
+          <div style={{ display: 'flex', marginTop: '4px', alignItems: 'center' }}>
+            <SelectInput value={outputFormat.value} options={options} onChange={changeFormat} />
+            <button onClick={onClickExport} style={{ flex: '1 1 auto' }}>
+              勤怠情報を出力する
+            </button>
+          </div>
         </div>
       </Accordion>
     </div>
@@ -127,7 +190,7 @@ const render = (parentElement: HTMLElement) => {
   const root = document.createElement('div');
   root.setAttribute('id', rootId);
   root.style.setProperty('background-color', '#ffffff');
-  root.style.setProperty('padding', '8px 32px 0px');
+  root.style.setProperty('padding', '8px 32px');
 
   parentElement.prepend(root);
   createRoot(root).render(
