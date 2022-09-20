@@ -81,7 +81,12 @@ const useOutputAttendanceRecord = () => {
     [outputFormat.extension, outputFormat.value],
   );
 
-  return { outputFormat, options: OUTPUT_FORMAT_OPTIONS, downloadRecord, changeFormat };
+  return {
+    outputFormat: outputFormat.value,
+    options: OUTPUT_FORMAT_OPTIONS,
+    downloadRecord,
+    changeFormat,
+  };
 };
 
 const Root = () => {
@@ -166,6 +171,7 @@ const Root = () => {
               id="working-time"
               name="workingTimePerDay"
               label="1日の勤務時間"
+              placeholder="H:mm 形式で入力"
               value={workingTime}
               onChange={setWorkingTime}
             />
@@ -178,7 +184,7 @@ const Root = () => {
             />
           )}
           <div style={{ display: 'flex', marginTop: '4px', alignItems: 'center' }}>
-            <SelectInput value={outputFormat.value} options={options} onChange={changeFormat} />
+            <SelectInput value={outputFormat} options={options} onChange={changeFormat} />
             <button onClick={onClickExport} style={{ flex: '1 1 auto' }}>
               勤怠情報を出力する
             </button>

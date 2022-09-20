@@ -1,13 +1,10 @@
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { TextInput } from './components/TextInput';
 import { useChromeStorage } from './hooks/useChromeStorage';
 
 const Popup = () => {
   const [workingTime, setWorkingTime] = useChromeStorage('working-time', '');
-
-  const onChangeWorkingTime = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setWorkingTime(e.currentTarget.value);
-  };
 
   return (
     <div
@@ -17,17 +14,13 @@ const Popup = () => {
       }}
     >
       <div style={{ display: 'flex', marginBottom: '8px', alignItems: 'center' }}>
-        <label htmlFor="working-time" style={{ marginRight: '4px', width: '120px' }}>
-          1日の勤務時間
-        </label>
-        <input
-          type="text"
+        <TextInput
           id="working-time"
-          name="working-time"
+          name="workingTimePerDay"
+          label="1日の勤務時間"
           placeholder="H:mm 形式で入力"
           value={workingTime}
-          onChange={onChangeWorkingTime}
-          style={{ flex: '1 1 auto' }}
+          onChange={setWorkingTime}
         />
       </div>
     </div>
