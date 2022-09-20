@@ -20,13 +20,13 @@ const ExpectedTimeSection = ({
   updatedAt,
 }: {
   title: string;
-  data?: AttendanceReportDocument;
-  updatedAt?: string;
+  data: AttendanceReportDocument;
+  updatedAt: string;
 }) => {
   const [workingTime, setWorkingTime] = useChromeStorage('working-time', '');
 
   const items = useMemo(() => {
-    if (!data || !workingTime) {
+    if (!workingTime) {
       return [];
     }
 
@@ -91,21 +91,18 @@ const ExpectedTimeSection = ({
 };
 
 const useAttendanceRecord = () => {
-  const [state, setState] = useState<{
-    data: AttendanceReportDocument;
-    updatedAt: Date;
-  } | null>(null);
+  const [state, setState] = useState<(AttendanceReportDocument & { updatedAt: Date }) | null>(null);
 
   const reload = useCallback(() => {
     const data = getAttendanceReportDocument();
-    setState({ data, updatedAt: new Date() });
+    setState({ ...data, updatedAt: new Date() });
   }, []);
 
-  return { data: state?.data, updatedAt: state?.updatedAt, reload };
+  return { data: state, reload };
 };
 
 const Root = () => {
-  const { reload, data, updatedAt } = useAttendanceRecord();
+  const { reload, data } = useAttendanceRecord();
 
   useEffect(() => {
     // TODO: 月が変わったとき、最終集計時刻が変わったときに再度取得する
@@ -113,12 +110,10 @@ const Root = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const month = useMemo(
+  const displayedMonth = useMemo(
     () => (data ? toAttendanceRecordMonth(data.displayedMonth) : undefined),
     [data],
   );
-
-  const sectionTitle = month ? `${format(month, 'yyyy年M月')}の勤怠時間の予想` : undefined;
 
   return (
     <div
@@ -128,11 +123,11 @@ const Root = () => {
       }}
     >
       <h2 style={{}}>予想時間</h2>
-      {sectionTitle && (
+      {!!displayedMonth && !!data && (
         <ExpectedTimeSection
-          title={sectionTitle}
+          title={`${format(displayedMonth, 'yyyy年M月')}の勤怠時間の予想`}
           data={data}
-          updatedAt={updatedAt ? `${format(updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新` : undefined}
+          updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
         />
       )}
     </div>
