@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import ja from 'date-fns/locale/ja';
-import { AttendanceRecord, ReportSummary } from '../document';
+import { AttendanceRecord, MonthlyAttendanceSummary } from '../document';
 import { isMatchDateFormat, timeStringToMinute } from './date';
 
 export const isValidWorkingMinutesFormat = (x: unknown): x is string =>
@@ -24,7 +24,7 @@ export const calcExpectedReportSummary = ({
   },
 }: {
   dailyWorkingMinutes: number;
-  summary: ReportSummary;
+  summary: MonthlyAttendanceSummary;
 }) => {
   /** 予想の残実労働時間 = 残りの労働日数 * 1日の勤務時間 */
   const expectedRemainingActualWorkingMinutes =

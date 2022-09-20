@@ -19,12 +19,12 @@ import { SelectInput } from '../components/SelectInput';
 import {
   MonthlyAttendanceRecord,
   getMonthlyAttendanceRecord,
-  ReportSummary,
+  MonthlyAttendanceSummary,
   getMonthlyAttendanceSummary,
 } from '../document';
 
 type MonthlyRecord = MonthlyAttendanceRecord & {
-  summary: ReportSummary;
+  summary: MonthlyAttendanceSummary;
 };
 
 const useFetchMonthlyRecord = () => {

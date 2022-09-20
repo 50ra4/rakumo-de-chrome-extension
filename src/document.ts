@@ -1,24 +1,6 @@
 import { getDay, getDate, compareAsc, getMonth } from 'date-fns';
 import { dateStringToDate, isMatchDateFormat, timeStringToMinute } from './utils/date';
 
-type ReportSummaryName =
-  | '所定労働日数'
-  | '所定労働時間'
-  | '実労働日数'
-  | '実労働時間'
-  | '時間外労働時間'
-  | '法定内'
-  | '法定外'
-  | 'みなし'
-  | '深夜労働時間'
-  | '休日労働時間'
-  | '所定休日'
-  | '法定休日'
-  | '有給休暇 (年休+特休)'
-  | '代休・休日'
-  | '有給取得時間 (年休・特休など)'
-  | '無給・欠勤・遅刻・早退';
-
 export const getDisplayedMonth = () => {
   const text = document.querySelector<HTMLElement>('.period-select')?.innerText;
   if (!text) return undefined;
@@ -98,6 +80,24 @@ const daysStringToDays = (str: string) => {
   return Number.isNaN(parsed) ? undefined : parsed;
 };
 
+type ReportSummaryName =
+  | '所定労働日数'
+  | '所定労働時間'
+  | '実労働日数'
+  | '実労働時間'
+  | '時間外労働時間'
+  | '法定内'
+  | '法定外'
+  | 'みなし'
+  | '深夜労働時間'
+  | '休日労働時間'
+  | '所定休日'
+  | '法定休日'
+  | '有給休暇 (年休+特休)'
+  | '代休・休日'
+  | '有給取得時間 (年休・特休など)'
+  | '無給・欠勤・遅刻・早退';
+
 export const getMonthlyAttendanceSummary = () => {
   const mapping = new Map(
     Array.from(
@@ -156,5 +156,4 @@ export const getMonthlyAttendanceSummary = () => {
   };
 };
 
-// FIXME: rename
-export type ReportSummary = ReturnType<typeof getMonthlyAttendanceSummary>;
+export type MonthlyAttendanceSummary = ReturnType<typeof getMonthlyAttendanceSummary>;
