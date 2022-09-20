@@ -38,7 +38,12 @@ export default defineManifest(({ command, mode, ...manifest }) => ({
     'activeTab',
     'declarativeContent',
   ],
-  content_scripts: [],
+  content_scripts: [
+    {
+      matches: ['https://a-rakumo.appspot.com/attendance/reports/*'],
+      js: ['src/content_scripts/attendance.tsx'],
+    },
+  ],
   background: {
     service_worker: 'src/background.ts',
   },
