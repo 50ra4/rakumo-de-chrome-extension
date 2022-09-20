@@ -29,17 +29,11 @@ export default defineManifest(({ command, mode, ...manifest }) => ({
     page: 'options.html',
   },
   author,
-  permissions: [
-    // FIXME:
-    'storage',
-    'background',
-    'contextMenus',
-    'scripting',
-    'activeTab',
-    'declarativeContent',
+  permissions: ['storage'],
+  content_scripts: [
+    {
+      matches: ['https://a-rakumo.appspot.com/attendance/reports/*'],
+      js: ['src/content_scripts/attendance.tsx'],
+    },
   ],
-  content_scripts: [],
-  background: {
-    service_worker: 'src/background.ts',
-  },
 }));
