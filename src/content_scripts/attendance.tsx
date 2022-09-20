@@ -13,6 +13,7 @@ import {
   toAttendanceRecordMonth,
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
+import { Accordion } from '../components/Accordion';
 
 const useAttendanceRecord = () => {
   const [state, setState] = useState<(AttendanceReportDocument & { updatedAt: Date }) | null>(null);
@@ -86,34 +87,36 @@ const Root = () => {
   return (
     <div
       style={{
-        padding: '4px',
         border: '1px solid #f3f3eb',
       }}
     >
-      <h2>予想時間</h2>
-      <div style={{ padding: '0 8px', maxWidth: '320px' }}>
-        <button onClick={reload} style={{ width: '100%', marginBottom: '8px' }}>
-          データを再取得する
-        </button>
-        <div style={{ marginBottom: '4px' }}>
-          <TextInput
-            id="working-time"
-            name="workingTimePerDay"
-            label="1日の勤務時間"
-            value={workingTime}
-            onChange={setWorkingTime}
-          />
-        </div>
-        {!!displayedMonth && !!data && !!items.length && (
-          <div style={{}}>
+      <Accordion
+        id="rakumo-de-extension-attendance-accordion"
+        title="予想時間"
+        defaultExpanded={true}
+      >
+        <div style={{ padding: '0 8px', maxWidth: '320px' }}>
+          <button onClick={reload} style={{ width: '100%', marginBottom: '8px' }}>
+            データを再取得する
+          </button>
+          <div style={{ marginBottom: '4px' }}>
+            <TextInput
+              id="working-time"
+              name="workingTimePerDay"
+              label="1日の勤務時間"
+              value={workingTime}
+              onChange={setWorkingTime}
+            />
+          </div>
+          {!!displayedMonth && !!data && !!items.length && (
             <SummaryReport
               title={`${format(displayedMonth, 'yyyy年M月')}の勤怠時間の予想`}
               items={items}
               updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
             />
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </Accordion>
     </div>
   );
 };
@@ -124,7 +127,7 @@ const render = (parentElement: HTMLElement) => {
   const root = document.createElement('div');
   root.setAttribute('id', rootId);
   root.style.setProperty('background-color', '#ffffff');
-  root.style.setProperty('padding', '24px 32px');
+  root.style.setProperty('padding', '8px 32px');
 
   parentElement.prepend(root);
   createRoot(root).render(
