@@ -19,7 +19,6 @@ import { SelectInput } from '../components/SelectInput';
 import {
   MonthlyAttendanceRecord,
   getMonthlyAttendanceRecord,
-  AttendanceRecord,
   ReportSummary,
   getMonthlyAttendanceSummary,
 } from '../document';
@@ -68,7 +67,7 @@ const useOutputAttendanceRecord = () => {
   }, []);
 
   const downloadRecord = useCallback(
-    (month: Date, records: AttendanceRecord[]) => {
+    ({ month, records }: MonthlyAttendanceRecord) => {
       const blob = outputFormat.value === 'csv' ? generateCsv(records) : generateTextPlain(records);
       const fileName = createAttendanceRecordFilename(month, outputFormat.extension);
 
@@ -144,7 +143,7 @@ const Root = () => {
       return;
     }
 
-    downloadRecord(data.month, data.records);
+    downloadRecord(data);
   }, [data, downloadRecord]);
 
   return (
