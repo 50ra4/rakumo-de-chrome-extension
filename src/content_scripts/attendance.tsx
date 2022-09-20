@@ -14,19 +14,34 @@ import {
 } from '../utils/attendance';
 import { minutesToTimeString } from '../utils/date';
 
-const ExpectedTimeSection = ({
-  title,
-  data,
-  updatedAt,
-}: {
-  title: string;
-  data: AttendanceReportDocument;
-  updatedAt: string;
-}) => {
+const useAttendanceRecord = () => {
+  const [state, setState] = useState<(AttendanceReportDocument & { updatedAt: Date }) | null>(null);
+
+  const reload = useCallback(() => {
+    const data = getAttendanceReportDocument();
+    setState({ ...data, updatedAt: new Date() });
+  }, []);
+
+  return { data: state, reload };
+};
+
+const Root = () => {
   const [workingTime, setWorkingTime] = useChromeStorage('working-time', '');
+  const { reload, data } = useAttendanceRecord();
+
+  useEffect(() => {
+    // TODO: 月が変わったとき、最終集計時刻が変わったときに再度取得する
+    reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const displayedMonth = useMemo(
+    () => (data ? toAttendanceRecordMonth(data.displayedMonth) : undefined),
+    [data],
+  );
 
   const items = useMemo(() => {
-    if (!workingTime) {
+    if (!data || !workingTime) {
       return [];
     }
 
@@ -50,7 +65,7 @@ const ExpectedTimeSection = ({
 
     return [
       { label: '(予測)時間外勤務時間', value: minutesToTimeString(expectedOvertimeWorkingMinutes) },
-      // TODO: 申請済みの時間外勤務時間
+      // TODO: 申請済みの時間外勤務時間を追加する
       { label: '(予測)実労働時間', value: minutesToTimeString(expectedActualWorkingMinutes) },
       {
         label: '(予測)残りの実労働時間',
@@ -69,49 +84,6 @@ const ExpectedTimeSection = ({
   }, [data, workingTime]);
 
   return (
-    <>
-      <div style={{ maxWidth: '300px' }}>
-        <TextInput
-          id="working-time"
-          name="workingTimePerDay"
-          label="1日の勤務時間"
-          value={workingTime}
-          onChange={setWorkingTime}
-        />
-      </div>
-      <div style={{ maxWidth: '320px' }}>
-        <SummaryReport title={title} items={items} updatedAt={updatedAt} />
-      </div>
-    </>
-  );
-};
-
-const useAttendanceRecord = () => {
-  const [state, setState] = useState<(AttendanceReportDocument & { updatedAt: Date }) | null>(null);
-
-  const reload = useCallback(() => {
-    const data = getAttendanceReportDocument();
-    setState({ ...data, updatedAt: new Date() });
-  }, []);
-
-  return { data: state, reload };
-};
-
-const Root = () => {
-  const { reload, data } = useAttendanceRecord();
-
-  useEffect(() => {
-    // TODO: 月が変わったとき、最終集計時刻が変わったときに再度取得する
-    reload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const displayedMonth = useMemo(
-    () => (data ? toAttendanceRecordMonth(data.displayedMonth) : undefined),
-    [data],
-  );
-
-  return (
     <div
       style={{
         padding: '4px',
@@ -119,16 +91,27 @@ const Root = () => {
       }}
     >
       <h2>予想時間</h2>
-      <div style={{ padding: '0 8px' }}>
-        <button onClick={reload} style={{ minWidth: '320px', margin: '8px 0' }}>
+      <div style={{ padding: '0 8px', maxWidth: '320px' }}>
+        <button onClick={reload} style={{ width: '100%', marginBottom: '8px' }}>
           データを再取得する
         </button>
-        {!!displayedMonth && !!data && (
-          <ExpectedTimeSection
-            title={`${format(displayedMonth, 'yyyy年M月')}の勤怠時間の予想`}
-            data={data}
-            updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
+        <div style={{ marginBottom: '4px' }}>
+          <TextInput
+            id="working-time"
+            name="workingTimePerDay"
+            label="1日の勤務時間"
+            value={workingTime}
+            onChange={setWorkingTime}
           />
+        </div>
+        {!!displayedMonth && !!data && !!items.length && (
+          <div style={{}}>
+            <SummaryReport
+              title={`${format(displayedMonth, 'yyyy年M月')}の勤怠時間の予想`}
+              items={items}
+              updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
+            />
+          </div>
         )}
       </div>
     </div>
