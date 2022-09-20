@@ -69,11 +69,7 @@ const ExpectedTimeSection = ({
   }, [data, workingTime]);
 
   return (
-    <div
-      style={{
-        padding: '0 8px',
-      }}
-    >
+    <>
       <div style={{ maxWidth: '300px' }}>
         <TextInput
           id="working-time"
@@ -84,9 +80,9 @@ const ExpectedTimeSection = ({
         />
       </div>
       <div style={{ maxWidth: '320px' }}>
-        <SummaryReport title={title} items={items} updatedAt={updatedAt ?? ''} />
+        <SummaryReport title={title} items={items} updatedAt={updatedAt} />
       </div>
-    </div>
+    </>
   );
 };
 
@@ -122,14 +118,19 @@ const Root = () => {
         border: '1px solid #f3f3eb',
       }}
     >
-      <h2 style={{}}>予想時間</h2>
-      {!!displayedMonth && !!data && (
-        <ExpectedTimeSection
-          title={`${format(displayedMonth, 'yyyy年M月')}の勤怠時間の予想`}
-          data={data}
-          updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
-        />
-      )}
+      <h2>予想時間</h2>
+      <div style={{ padding: '0 8px' }}>
+        <button onClick={reload} style={{ minWidth: '320px', margin: '8px 0' }}>
+          データを再取得する
+        </button>
+        {!!displayedMonth && !!data && (
+          <ExpectedTimeSection
+            title={`${format(displayedMonth, 'yyyy年M月')}の勤怠時間の予想`}
+            data={data}
+            updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
+          />
+        )}
+      </div>
     </div>
   );
 };
