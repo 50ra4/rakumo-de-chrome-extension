@@ -107,8 +107,11 @@ export const toReportSummary = ({
 
 export type ReportSummary = ReturnType<typeof toReportSummary>;
 
+export const isValidWorkingMinutesFormat = (x: unknown): x is string =>
+  typeof x === 'string' && isMatchDateFormat(x, 'H:mm');
+
 export const toWorkingMinutes = (workingTimeStr: string) => {
-  if (!isMatchDateFormat(workingTimeStr, 'H:mm')) {
+  if (!isValidWorkingMinutesFormat(workingTimeStr)) {
     throw Error('WORKING TIME FORMAT IS INVALID');
   }
   return timeStringToMinute(workingTimeStr);
