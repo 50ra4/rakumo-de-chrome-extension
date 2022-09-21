@@ -35,6 +35,8 @@ const useFetchMonthlyRecord = () => {
   const reload = useCallback(() => {
     const record = getMonthlyAttendanceRecord();
     const summary = getMonthlyAttendanceSummary();
+    // TODO: remove console.log
+    // console.log({ record, summary });
     if (!record) {
       setState(null);
       return;
@@ -114,6 +116,7 @@ const Root = () => {
     } = calcExpectedReportSummary({
       dailyWorkingMinutes: toWorkingMinutes(workingTime),
       summary: data.summary,
+      records: data.records,
     });
     const {
       prescribedWorkingDays,
@@ -162,7 +165,7 @@ const Root = () => {
       <Accordion
         id="rakumo-de-extension-attendance-accordion"
         title="rakumo-de-extension"
-        defaultExpanded={false}
+        defaultExpanded={true}
       >
         <div style={{ maxWidth: '320px' }}>
           <button onClick={reload} style={{ marginBottom: '8px' }}>
