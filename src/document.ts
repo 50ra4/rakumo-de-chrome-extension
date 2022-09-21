@@ -1,4 +1,4 @@
-import { getDay, getDate, compareAsc, getMonth } from 'date-fns';
+import { getDay, getDate, compareAsc, getMonth, isFuture } from 'date-fns';
 import { dateStringToDate, isMatchDateFormat, timeStringToMinute } from './utils/date';
 
 export const getDisplayedMonth = () => {
@@ -53,7 +53,6 @@ export const getMonthlyAttendanceRecord = () => {
           month,
           isHoliday,
           holidayText,
-          isFirstDay,
           date,
           dayOfWeek,
           dayOfMonth,
@@ -61,6 +60,7 @@ export const getMonthlyAttendanceRecord = () => {
           checkOut,
           breakTimeMinute,
           workingTimeMinute,
+          isFuture: isFuture(date),
         };
       },
     )
