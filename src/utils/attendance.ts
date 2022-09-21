@@ -24,21 +24,24 @@ export const calcExpectedReportSummary = ({
   dailyWorkingMinutes: number;
   summary: MonthlyAttendanceSummary;
 }) => {
-  /** 予想の残実労働時間 = 残りの労働日数 * 1日の勤務時間 */
+  /** [予測]残実労働時間 = 残りの労働日数 * 1日の勤務時間 */
   const expectedRemainingActualWorkingMinutes =
     // FIXME: 休暇日数を除外する
     (prescribedWorkingDays - actualWorkingDays) * dailyWorkingMinutes;
 
-  /** 予想の実労働時間 */
+  /** [予測]実労働時間 =  */
   const expectedActualWorkingMinutes = expectedRemainingActualWorkingMinutes + actualWorkingMinutes;
 
-  /** 予想の時間外勤務時間 = 予想の実労働時間 - 所定労働時間 - 有給取得時間 */
+  /** [予測]時間外勤務時間 = 予想の実労働時間 - 所定労働時間 - 有給取得時間 */
   const expectedOvertimeWorkingMinutes =
     expectedActualWorkingMinutes - prescribedWorkingMinutes - leavePaidMinutes;
 
   return {
+    /** [予測]残りの実労働時間 */
     expectedRemainingActualWorkingMinutes,
+    /** [予測]時間外勤務時間 */
     expectedOvertimeWorkingMinutes,
+    /** [予測]実労働時間 */
     expectedActualWorkingMinutes,
   };
 };
