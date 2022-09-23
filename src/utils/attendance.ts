@@ -1,4 +1,4 @@
-import { AttendanceRecord, MonthlyAttendanceSummary } from '../document';
+import { MonthlyAttendanceSummary } from '../document';
 import { isMatchDateFormat, minutesToTimeString, timeStringToMinute } from './date';
 
 export const isValidWorkingMinutesFormat = (x: unknown): x is string =>
@@ -41,7 +41,7 @@ export const calcExpectedReportSummary = ({
     /** [予測]残りの実労働時間（分） */
     expectedRemainingActualWorkingMinutes,
     /** [予測]残りの実労働時間 */
-    expectedRemainingActualWorkingTime: minutesToTimeString(expectedOvertimeWorkingMinutes),
+    expectedRemainingActualWorkingTime: minutesToTimeString(expectedRemainingActualWorkingMinutes),
     /** [予測]時間外労働時間（分） */
     expectedOvertimeWorkingMinutes,
     /** [予測]時間外労働時間 */
