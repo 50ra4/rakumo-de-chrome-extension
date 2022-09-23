@@ -23,6 +23,7 @@ import {
   generateTextPlain,
   createAttendanceRecordFilename,
 } from '../utils/outputFile';
+import { minutesToTimeString } from '../utils/date';
 
 type MonthlyRecord = MonthlyAttendanceRecord & {
   summary: MonthlyAttendanceSummary;
@@ -94,6 +95,11 @@ const useOutputAttendanceRecord = () => {
 
 const Root = () => {
   const [workingTime, setWorkingTime] = useChromeStorage('working-time', '');
+  const [appliedOvertimeWorkingTime, setAppliedOvertimeWorkingTime] = useChromeStorage(
+    'applied-overtime-working-time',
+    '',
+  );
+
   const { reload, data } = useFetchMonthlyRecord();
   const { outputFormat, options, downloadRecord, changeFormat } = useOutputAttendanceRecord();
 
@@ -107,6 +113,10 @@ const Root = () => {
     ? toWorkingMinutes(workingTime)
     : undefined;
 
+  const appliedOvertimeWorkingMinutes = isValidWorkingMinutesFormat(appliedOvertimeWorkingTime)
+    ? toWorkingMinutes(appliedOvertimeWorkingTime)
+    : 0;
+
   const items = useMemo(() => {
     if (!data || !dailyWorkingMinutes) {
       return [];
@@ -119,6 +129,7 @@ const Root = () => {
     const {
       expectedRemainingActualWorkingTime,
       expectedOvertimeWorkingTime,
+      expectedOvertimeWorkingMinutes,
       expectedActualWorkingTime,
     } = calcExpectedReportSummary({
       dailyWorkingMinutes,
@@ -134,16 +145,24 @@ const Root = () => {
       leavePaidTime,
     } = data.summary;
 
+    const unappliedOvertimeWorkingMinutes =
+      expectedOvertimeWorkingMinutes - appliedOvertimeWorkingMinutes;
+
     return [
+      {
+        label: '未申請の時間外労働時間',
+        value: minutesToTimeString(
+          unappliedOvertimeWorkingMinutes > 0 ? unappliedOvertimeWorkingMinutes : 0,
+        ),
+      },
       { label: '[予測]時間外労働時間', value: expectedOvertimeWorkingTime },
       {
         label: '[予測]残りの実労働時間',
         value: expectedRemainingActualWorkingTime,
       },
-      // TODO: 申請済みの時間外勤務時間を追加する
       { label: '[予測]実労働時間（A）', value: expectedActualWorkingTime },
-      { label: '有給取得時間 (年休・特休など)（B）', value: leavePaidTime ?? 'N/A' },
       { label: '所定労働時間（C）', value: prescribedWorkingTime ?? 'N/A' },
+      { label: '有給取得時間 (年休・特休など)（B）', value: leavePaidTime ?? 'N/A' },
       {
         label: '所定労働日数',
         value: prescribedWorkingDays ? `${prescribedWorkingDays}日` : 'N/A',
@@ -152,7 +171,7 @@ const Root = () => {
       { label: '実労働時間（A）', value: actualWorkingTime ?? 'N/A' },
       { label: '時間外労働時間', value: overtimeWorkTime ?? 'N/A' },
     ];
-  }, [dailyWorkingMinutes, data]);
+  }, [appliedOvertimeWorkingMinutes, dailyWorkingMinutes, data]);
 
   const onClickExport = useCallback(() => {
     if (!data) {
@@ -186,6 +205,16 @@ const Root = () => {
               placeholder="H:mm 形式で入力してください"
               value={workingTime}
               onChange={setWorkingTime}
+            />
+          </div>
+          <div style={{ marginBottom: '4px' }}>
+            <TextInput
+              id="overtime-working-time"
+              name="appliedOvertimeWorkingTime"
+              label="申請済の時間外労働時間"
+              placeholder="H:mm 形式で入力してください"
+              value={appliedOvertimeWorkingTime}
+              onChange={setAppliedOvertimeWorkingTime}
             />
           </div>
           {!!data && !!items.length && (
