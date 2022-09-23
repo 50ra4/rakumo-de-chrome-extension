@@ -13,6 +13,7 @@ export const toWorkingMinutes = (workingTimeStr: string) => {
 
 export const calcExpectedReportSummary = ({
   dailyWorkingMinutes,
+  holidaysInPast,
   summary: {
     prescribedWorkingDays = 0,
     prescribedWorkingMinutes = 0,
@@ -20,14 +21,11 @@ export const calcExpectedReportSummary = ({
     actualWorkingMinutes = 0,
     leavePaidMinutes = 0,
   },
-  records,
 }: {
   dailyWorkingMinutes: number;
+  holidaysInPast: number;
   summary: MonthlyAttendanceSummary;
-  records: AttendanceRecord[];
 }) => {
-  const holidaysInPast = records.filter(({ isHoliday, isFuture }) => isHoliday && !isFuture).length;
-
   /** [予測]残りの実労働時間 = 残りの労働日数 * 1日の勤務時間 */
   const expectedRemainingActualWorkingMinutes =
     (prescribedWorkingDays - actualWorkingDays - holidaysInPast) * dailyWorkingMinutes;

@@ -112,6 +112,10 @@ const Root = () => {
       return [];
     }
 
+    const holidaysInPast = data.records.filter(
+      ({ isHoliday, isFuture }) => isHoliday && !isFuture,
+    ).length;
+
     const {
       expectedRemainingActualWorkingTime,
       expectedOvertimeWorkingTime,
@@ -119,7 +123,7 @@ const Root = () => {
     } = calcExpectedReportSummary({
       dailyWorkingMinutes,
       summary: data.summary,
-      records: data.records,
+      holidaysInPast,
     });
     const {
       prescribedWorkingDays,
