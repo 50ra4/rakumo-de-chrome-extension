@@ -1,5 +1,5 @@
 import { MonthlyAttendanceSummary } from '../document';
-import { isMatchDateFormat, timeStringToMinute } from './date';
+import { isMatchDateFormat, minutesToTimeString, timeStringToMinute } from './date';
 
 export const isValidWorkingMinutesFormat = (x: unknown): x is string =>
   typeof x === 'string' && isMatchDateFormat(x, 'H:mm');
@@ -13,6 +13,7 @@ export const toWorkingMinutes = (workingTimeStr: string) => {
 
 export const calcExpectedReportSummary = ({
   dailyWorkingMinutes,
+  holidaysInPast,
   summary: {
     prescribedWorkingDays = 0,
     prescribedWorkingMinutes = 0,
@@ -22,23 +23,32 @@ export const calcExpectedReportSummary = ({
   },
 }: {
   dailyWorkingMinutes: number;
+  holidaysInPast: number;
   summary: MonthlyAttendanceSummary;
 }) => {
-  /** 予想の残実労働時間 = 残りの労働日数 * 1日の勤務時間 */
+  /** [予測]残りの実労働時間 = 残りの労働日数 * 1日の勤務時間 */
   const expectedRemainingActualWorkingMinutes =
-    // FIXME: 休暇日数を除外する
-    (prescribedWorkingDays - actualWorkingDays) * dailyWorkingMinutes;
+    (prescribedWorkingDays - actualWorkingDays - holidaysInPast) * dailyWorkingMinutes;
 
-  /** 予想の実労働時間 */
+  /** [予測]実労働時間 = [予測]残りの実労働時間 + 実労働時間 */
   const expectedActualWorkingMinutes = expectedRemainingActualWorkingMinutes + actualWorkingMinutes;
 
-  /** 予想の時間外勤務時間 = 予想の実労働時間 - 所定労働時間 - 有給取得時間 */
+  /** [予測]時間外勤務時間 = A.[予測]実労働時間 - (C.所定労働時間 - B.有給取得時間) */
   const expectedOvertimeWorkingMinutes =
-    expectedActualWorkingMinutes - prescribedWorkingMinutes - leavePaidMinutes;
+    expectedActualWorkingMinutes - (prescribedWorkingMinutes - leavePaidMinutes);
 
   return {
+    /** [予測]残りの実労働時間（分） */
     expectedRemainingActualWorkingMinutes,
+    /** [予測]残りの実労働時間 */
+    expectedRemainingActualWorkingTime: minutesToTimeString(expectedRemainingActualWorkingMinutes),
+    /** [予測]時間外労働時間（分） */
     expectedOvertimeWorkingMinutes,
+    /** [予測]時間外労働時間 */
+    expectedOvertimeWorkingTime: minutesToTimeString(expectedOvertimeWorkingMinutes),
+    /** [予測]実労働時間（分） */
     expectedActualWorkingMinutes,
+    /** [予測]実労働時間 */
+    expectedActualWorkingTime: minutesToTimeString(expectedActualWorkingMinutes),
   };
 };

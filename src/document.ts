@@ -1,4 +1,4 @@
-import { getDay, getDate, compareAsc, getMonth } from 'date-fns';
+import { getDay, getDate, compareAsc, getMonth, isFuture } from 'date-fns';
 import { dateStringToDate, isMatchDateFormat, timeStringToMinute } from './utils/date';
 
 export const getDisplayedMonth = () => {
@@ -53,7 +53,6 @@ export const getMonthlyAttendanceRecord = () => {
           month,
           isHoliday,
           holidayText,
-          isFirstDay,
           date,
           dayOfWeek,
           dayOfMonth,
@@ -61,6 +60,7 @@ export const getMonthlyAttendanceRecord = () => {
           checkOut,
           breakTimeMinute,
           workingTimeMinute,
+          isFuture: isFuture(date),
         };
       },
     )
@@ -123,35 +123,57 @@ export const getMonthlyAttendanceSummary = () => {
   const dayOffWorkingTime = mapping.get('休日労働時間');
 
   return {
+    /** 所定労働日数 */
     prescribedWorkingDays: prescribedWorkingDays
       ? daysStringToDays(prescribedWorkingDays)
       : undefined,
+    /** 所定労働時間 */
     prescribedWorkingTime,
+    /** 所定労働時間（分） */
     prescribedWorkingMinutes: prescribedWorkingTime
       ? timeStringToMinute(prescribedWorkingTime)
       : undefined,
+    /** 実労働日数 */
     actualWorkingDays: actualWorkingDays ? daysStringToDays(actualWorkingDays) : undefined,
+    /** 実労働時間 */
     actualWorkingTime,
+    /** 実労働時間（分） */
     actualWorkingMinutes: actualWorkingTime ? timeStringToMinute(actualWorkingTime) : undefined,
+    /** 時間外労働時間 */
     overtimeWorkTime,
+    /** 時間外労働時間(分) */
     overtimeWorkMinutes: overtimeWorkTime ? timeStringToMinute(overtimeWorkTime) : undefined,
+    /** 時間外労働時間・法定内 */
     overtimeWorkIncludeTime,
+    /** 時間外労働時間・法定内（分） */
     overtimeWorkIncludeMinutes: overtimeWorkIncludeTime
       ? timeStringToMinute(overtimeWorkIncludeTime)
       : undefined,
+    /** 時間外労働時間・法定外 */
     overtimeWorkExcludeTime,
+    /** 時間外労働時間・法定外（分） */
     overtimeWorkExcludeMinutes: overtimeWorkExcludeTime
       ? timeStringToMinute(overtimeWorkExcludeTime)
       : undefined,
+    /** 時間外労働時間・みなし */
     overtimeDeemedTime,
+    /** 時間外労働時間・みなし（分） */
     overtimeDeemedMinutes: overtimeDeemedTime ? timeStringToMinute(overtimeDeemedTime) : undefined,
+    /** 有給取得時間 (年休・特休など) */
     leavePaidTime,
+    /** 有給取得時間 (年休・特休など)（分） */
     leavePaidMinutes: leavePaidTime ? timeStringToMinute(leavePaidTime) : undefined,
+    /** 無給・欠勤・遅刻・早退 */
     leaveUnpaidTime,
+    /** 無給・欠勤・遅刻・早退（分） */
     leaveUnpaidMinutes: leaveUnpaidTime ? timeStringToMinute(leaveUnpaidTime) : undefined,
+    /** 深夜労働時間 */
     nightWorkingTime,
+    /** 深夜労働時間（分） */
     nightWorkingMinutes: nightWorkingTime ? timeStringToMinute(nightWorkingTime) : undefined,
+    /** 休日労働時間 */
     dayOffWorkingTime,
+    /** 休日労働時間（分） */
     dayOffWorkingMinutes: dayOffWorkingTime ? timeStringToMinute(dayOffWorkingTime) : undefined,
   };
 };

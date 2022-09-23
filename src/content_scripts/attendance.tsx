@@ -10,7 +10,6 @@ import {
   toWorkingMinutes,
   isValidWorkingMinutesFormat,
 } from '../utils/attendance';
-import { minutesToTimeString } from '../utils/date';
 import { Accordion } from '../components/Accordion';
 import { SelectInput } from '../components/SelectInput';
 import {
@@ -35,6 +34,8 @@ const useFetchMonthlyRecord = () => {
   const reload = useCallback(() => {
     const record = getMonthlyAttendanceRecord();
     const summary = getMonthlyAttendanceSummary();
+    // TODO: remove console.log
+    // console.log({ record, summary });
     if (!record) {
       setState(null);
       return;
@@ -102,18 +103,27 @@ const Root = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const dailyWorkingMinutes = isValidWorkingMinutesFormat(workingTime)
+    ? toWorkingMinutes(workingTime)
+    : undefined;
+
   const items = useMemo(() => {
-    if (!data || !workingTime || !isValidWorkingMinutesFormat(workingTime)) {
+    if (!data || !dailyWorkingMinutes) {
       return [];
     }
 
+    const holidaysInPast = data.records.filter(
+      ({ isHoliday, isFuture }) => isHoliday && !isFuture,
+    ).length;
+
     const {
-      expectedRemainingActualWorkingMinutes,
-      expectedOvertimeWorkingMinutes,
-      expectedActualWorkingMinutes,
+      expectedRemainingActualWorkingTime,
+      expectedOvertimeWorkingTime,
+      expectedActualWorkingTime,
     } = calcExpectedReportSummary({
-      dailyWorkingMinutes: toWorkingMinutes(workingTime),
+      dailyWorkingMinutes,
       summary: data.summary,
+      holidaysInPast,
     });
     const {
       prescribedWorkingDays,
@@ -125,24 +135,24 @@ const Root = () => {
     } = data.summary;
 
     return [
-      { label: '(予測)時間外勤務時間', value: minutesToTimeString(expectedOvertimeWorkingMinutes) },
-      // TODO: 申請済みの時間外勤務時間を追加する
-      { label: '(予測)実労働時間', value: minutesToTimeString(expectedActualWorkingMinutes) },
+      { label: '[予測]時間外労働時間', value: expectedOvertimeWorkingTime },
       {
-        label: '(予測)残りの実労働時間',
-        value: minutesToTimeString(expectedRemainingActualWorkingMinutes),
+        label: '[予測]残りの実労働時間',
+        value: expectedRemainingActualWorkingTime,
       },
+      // TODO: 申請済みの時間外勤務時間を追加する
+      { label: '[予測]実労働時間（A）', value: expectedActualWorkingTime },
+      { label: '有給取得時間 (年休・特休など)（B）', value: leavePaidTime ?? 'N/A' },
+      { label: '所定労働時間（C）', value: prescribedWorkingTime ?? 'N/A' },
       {
         label: '所定労働日数',
         value: prescribedWorkingDays ? `${prescribedWorkingDays}日` : 'N/A',
       },
-      { label: '所定労働時間', value: prescribedWorkingTime ?? 'N/A' },
       { label: '実労働日数', value: actualWorkingDays ? `${actualWorkingDays}日` : 'N/A' },
-      { label: '実労働時間', value: actualWorkingTime ?? 'N/A' },
+      { label: '実労働時間（A）', value: actualWorkingTime ?? 'N/A' },
       { label: '時間外労働時間', value: overtimeWorkTime ?? 'N/A' },
-      { label: '有給取得時間 (年休・特休など)', value: leavePaidTime ?? 'N/A' },
     ];
-  }, [data, workingTime]);
+  }, [dailyWorkingMinutes, data]);
 
   const onClickExport = useCallback(() => {
     if (!data) {
@@ -162,7 +172,7 @@ const Root = () => {
       <Accordion
         id="rakumo-de-extension-attendance-accordion"
         title="rakumo-de-extension"
-        defaultExpanded={false}
+        defaultExpanded={true}
       >
         <div style={{ maxWidth: '320px' }}>
           <button onClick={reload} style={{ marginBottom: '8px' }}>
@@ -173,7 +183,7 @@ const Root = () => {
               id="working-time"
               name="workingTimePerDay"
               label="1日の勤務時間"
-              placeholder="H:mm 形式で入力"
+              placeholder="H:mm 形式で入力してください"
               value={workingTime}
               onChange={setWorkingTime}
             />
