@@ -1,5 +1,5 @@
 import { AttendanceRecord, MonthlyAttendanceSummary } from '../document';
-import { isMatchDateFormat, timeStringToMinute } from './date';
+import { isMatchDateFormat, minutesToTimeString, timeStringToMinute } from './date';
 
 export const isValidWorkingMinutesFormat = (x: unknown): x is string =>
   typeof x === 'string' && isMatchDateFormat(x, 'H:mm');
@@ -42,9 +42,15 @@ export const calcExpectedReportSummary = ({
   return {
     /** [予測]残りの実労働時間（分） */
     expectedRemainingActualWorkingMinutes,
+    /** [予測]残りの実労働時間 */
+    expectedRemainingActualWorkingTime: minutesToTimeString(expectedOvertimeWorkingMinutes),
     /** [予測]時間外勤務時間（分） */
     expectedOvertimeWorkingMinutes,
+    /** [予測]時間外勤務時間 */
+    expectedOvertimeWorkingTime: minutesToTimeString(expectedOvertimeWorkingMinutes),
     /** [予測]実労働時間（分） */
     expectedActualWorkingMinutes,
+    /** [予測]実労働時間 */
+    expectedActualWorkingTime: minutesToTimeString(expectedActualWorkingMinutes),
   };
 };

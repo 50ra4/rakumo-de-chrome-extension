@@ -10,7 +10,6 @@ import {
   toWorkingMinutes,
   isValidWorkingMinutesFormat,
 } from '../utils/attendance';
-import { minutesToTimeString } from '../utils/date';
 import { Accordion } from '../components/Accordion';
 import { SelectInput } from '../components/SelectInput';
 import {
@@ -110,9 +109,9 @@ const Root = () => {
     }
 
     const {
-      expectedRemainingActualWorkingMinutes,
-      expectedOvertimeWorkingMinutes,
-      expectedActualWorkingMinutes,
+      expectedRemainingActualWorkingTime,
+      expectedOvertimeWorkingTime,
+      expectedActualWorkingTime,
     } = calcExpectedReportSummary({
       dailyWorkingMinutes: toWorkingMinutes(workingTime),
       summary: data.summary,
@@ -128,13 +127,13 @@ const Root = () => {
     } = data.summary;
 
     return [
-      { label: '[予測]時間外勤務時間', value: minutesToTimeString(expectedOvertimeWorkingMinutes) },
+      { label: '[予測]時間外勤務時間', value: expectedOvertimeWorkingTime },
       {
         label: '[予測]残りの実労働時間',
-        value: minutesToTimeString(expectedRemainingActualWorkingMinutes),
+        value: expectedRemainingActualWorkingTime,
       },
       // TODO: 申請済みの時間外勤務時間を追加する
-      { label: '[予測]実労働時間（A）', value: minutesToTimeString(expectedActualWorkingMinutes) },
+      { label: '[予測]実労働時間（A）', value: expectedActualWorkingTime },
       { label: '有給取得時間 (年休・特休など)（B）', value: leavePaidTime ?? 'N/A' },
       { label: '所定労働時間（C）', value: prescribedWorkingTime ?? 'N/A' },
       {
