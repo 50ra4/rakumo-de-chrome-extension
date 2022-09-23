@@ -1,4 +1,4 @@
-import React, { StrictMode, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { StrictMode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { format } from 'date-fns';
@@ -17,6 +17,8 @@ import {
   getMonthlyAttendanceRecord,
   MonthlyAttendanceSummary,
   getMonthlyAttendanceSummary,
+  getDisplayedMonthElement,
+  getDisplayedMonth,
 } from '../document';
 import {
   generateCsv,
@@ -24,6 +26,7 @@ import {
   createAttendanceRecordFilename,
 } from '../utils/outputFile';
 import { minutesToTimeString } from '../utils/date';
+import { useMutationObservable } from '../hooks/useMutationObservable';
 
 type MonthlyRecord = MonthlyAttendanceRecord & {
   summary: MonthlyAttendanceSummary;
@@ -93,6 +96,38 @@ const useOutputAttendanceRecord = () => {
   };
 };
 
+const useDetectMonthChange = (callback: (month: string) => void) => {
+  const previousValue = useRef('');
+
+  const elm = getDisplayedMonthElement();
+
+  const handler = () => {
+    const month = getDisplayedMonth();
+    if (!month) {
+      return;
+    }
+
+    const monthStr = format(month, 'yyyy-MM');
+    if (monthStr === previousValue.current) {
+      return;
+    }
+    previousValue.current = monthStr;
+    callback(monthStr);
+  };
+
+  useMutationObservable(elm, handler, {
+    childList: true, // required
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+
+  useEffect(() => {
+    handler();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+};
+
 const Root = () => {
   const [workingTime, setWorkingTime] = useChromeStorage('working-time', '');
   const [appliedOvertimeWorkingTime, setAppliedOvertimeWorkingTime] = useChromeStorage(
@@ -103,11 +138,9 @@ const Root = () => {
   const { reload, data } = useFetchMonthlyRecord();
   const { outputFormat, options, downloadRecord, changeFormat } = useOutputAttendanceRecord();
 
-  useEffect(() => {
-    // TODO: 月が変わったとき、最終集計時刻が変わったときに再度取得する
+  useDetectMonthChange(() => {
     reload();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const dailyWorkingMinutes = isValidWorkingMinutesFormat(workingTime)
     ? toWorkingMinutes(workingTime)

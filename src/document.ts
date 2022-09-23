@@ -1,8 +1,10 @@
 import { getDay, getDate, compareAsc, getMonth, isFuture } from 'date-fns';
 import { dateStringToDate, isMatchDateFormat, timeStringToMinute } from './utils/date';
 
+export const getDisplayedMonthElement = () => document.querySelector<HTMLElement>('.period-select');
+
 export const getDisplayedMonth = () => {
-  const text = document.querySelector<HTMLElement>('.period-select')?.innerText;
+  const text = getDisplayedMonthElement()?.innerText;
   if (!text) return undefined;
   return dateStringToDate(text, 'yyyy年 M月度');
 };
