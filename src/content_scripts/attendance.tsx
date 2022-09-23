@@ -127,10 +127,9 @@ const Root = () => {
     ).length;
 
     const {
-      expectedRemainingActualWorkingTime,
-      expectedOvertimeWorkingTime,
+      expectedRemainingActualWorkingMinutes,
       expectedOvertimeWorkingMinutes,
-      expectedActualWorkingTime,
+      expectedActualWorkingMinutes,
     } = calcExpectedReportSummary({
       dailyWorkingMinutes,
       summary: data.summary,
@@ -155,12 +154,12 @@ const Root = () => {
           unappliedOvertimeWorkingMinutes > 0 ? unappliedOvertimeWorkingMinutes : 0,
         ),
       },
-      { label: '[予測]時間外労働時間', value: expectedOvertimeWorkingTime },
+      { label: '[予測]時間外労働時間', value: minutesToTimeString(expectedOvertimeWorkingMinutes) },
       {
         label: '[予測]残りの実労働時間',
-        value: expectedRemainingActualWorkingTime,
+        value: minutesToTimeString(expectedRemainingActualWorkingMinutes),
       },
-      { label: '[予測]実労働時間（A）', value: expectedActualWorkingTime },
+      { label: '[予測]実労働時間（A）', value: minutesToTimeString(expectedActualWorkingMinutes) },
       { label: '所定労働時間（C）', value: prescribedWorkingTime ?? 'N/A' },
       { label: '有給取得時間 (年休・特休など)（B）', value: leavePaidTime ?? 'N/A' },
       {
