@@ -103,8 +103,12 @@ const Root = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const dailyWorkingMinutes = isValidWorkingMinutesFormat(workingTime)
+    ? toWorkingMinutes(workingTime)
+    : undefined;
+
   const items = useMemo(() => {
-    if (!data || !workingTime || !isValidWorkingMinutesFormat(workingTime)) {
+    if (!data || !dailyWorkingMinutes) {
       return [];
     }
 
@@ -113,7 +117,7 @@ const Root = () => {
       expectedOvertimeWorkingTime,
       expectedActualWorkingTime,
     } = calcExpectedReportSummary({
-      dailyWorkingMinutes: toWorkingMinutes(workingTime),
+      dailyWorkingMinutes,
       summary: data.summary,
       records: data.records,
     });
@@ -144,7 +148,7 @@ const Root = () => {
       { label: '実労働時間（A）', value: actualWorkingTime ?? 'N/A' },
       { label: '時間外労働時間', value: overtimeWorkTime ?? 'N/A' },
     ];
-  }, [data, workingTime]);
+  }, [dailyWorkingMinutes, data]);
 
   const onClickExport = useCallback(() => {
     if (!data) {
@@ -175,7 +179,7 @@ const Root = () => {
               id="working-time"
               name="workingTimePerDay"
               label="1日の勤務時間"
-              placeholder="H:mm 形式で入力"
+              placeholder="H:mm 形式で入力してください"
               value={workingTime}
               onChange={setWorkingTime}
             />
