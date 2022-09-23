@@ -28,11 +28,11 @@ export const calcExpectedReportSummary = ({
 }) => {
   const holidaysInPast = records.filter(({ isHoliday, isFuture }) => isHoliday && !isFuture).length;
 
-  /** [予測]残実労働時間 = 残りの労働日数 * 1日の勤務時間 */
+  /** [予測]残りの実労働時間 = 残りの労働日数 * 1日の勤務時間 */
   const expectedRemainingActualWorkingMinutes =
     (prescribedWorkingDays - actualWorkingDays - holidaysInPast) * dailyWorkingMinutes;
 
-  /** [予測]実労働時間 = [予測]残実労働時間 + 実労働時間 */
+  /** [予測]実労働時間 = [予測]残りの実労働時間 + 実労働時間 */
   const expectedActualWorkingMinutes = expectedRemainingActualWorkingMinutes + actualWorkingMinutes;
 
   /** [予測]時間外勤務時間 = A.[予測]実労働時間 - (C.所定労働時間 - B.有給取得時間) */
@@ -44,9 +44,9 @@ export const calcExpectedReportSummary = ({
     expectedRemainingActualWorkingMinutes,
     /** [予測]残りの実労働時間 */
     expectedRemainingActualWorkingTime: minutesToTimeString(expectedOvertimeWorkingMinutes),
-    /** [予測]時間外勤務時間（分） */
+    /** [予測]時間外労働時間（分） */
     expectedOvertimeWorkingMinutes,
-    /** [予測]時間外勤務時間 */
+    /** [予測]時間外労働時間 */
     expectedOvertimeWorkingTime: minutesToTimeString(expectedOvertimeWorkingMinutes),
     /** [予測]実労働時間（分） */
     expectedActualWorkingMinutes,

@@ -131,7 +131,7 @@ const Root = () => {
     } = data.summary;
 
     return [
-      { label: '[予測]時間外勤務時間', value: expectedOvertimeWorkingTime },
+      { label: '[予測]時間外労働時間', value: expectedOvertimeWorkingTime },
       {
         label: '[予測]残りの実労働時間',
         value: expectedRemainingActualWorkingTime,
