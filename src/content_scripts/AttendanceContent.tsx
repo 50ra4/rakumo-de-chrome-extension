@@ -270,7 +270,7 @@ export function AttendanceContent() {
               onChange={setAppliedOvertimeWorkingTime}
             />
             <div style={{ marginTop: '10px' }}>
-              <h3 style={{ margin: '0' }}>勤怠情報出力</h3>
+              <h3 style={{ marginTop: '0', marginBottom: '4px' }}>勤怠情報出力</h3>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <SelectInput value={outputFormat} options={options} onChange={changeFormat} />
                 <Button onClick={onClickExport}>出力する</Button>
