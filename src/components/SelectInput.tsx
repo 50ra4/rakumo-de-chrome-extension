@@ -9,7 +9,7 @@ type Props<T extends string> = {
 export function SelectInput<T extends string>({ value, options, onChange }: Props<T>) {
   return (
     <select
-      style={{ height: '28px' }}
+      style={{ height: '36px' }}
       value={value}
       onChange={(e) => {
         onChange(e.target.value as T);
