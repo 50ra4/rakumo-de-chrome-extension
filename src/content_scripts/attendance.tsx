@@ -27,6 +27,7 @@ import {
 } from '../utils/outputFile';
 import { minutesToTimeString } from '../utils/date';
 import { useMutationObservable } from '../hooks/useMutationObservable';
+import { Button } from '../components/Button';
 
 type MonthlyRecord = MonthlyAttendanceRecord & {
   summary: MonthlyAttendanceSummary;
@@ -226,9 +227,9 @@ const Root = () => {
         defaultExpanded={true}
       >
         <div style={{ maxWidth: '320px' }}>
-          <button onClick={reload} style={{ marginBottom: '8px' }}>
-            データを再取得する
-          </button>
+          <div style={{ marginBottom: '8px' }}>
+            <Button onClick={reload}>データを再取得する</Button>
+          </div>
           <div style={{ marginBottom: '4px' }}>
             <TextInput
               id="working-time"
@@ -258,9 +259,7 @@ const Root = () => {
           )}
           <div style={{ display: 'flex', marginTop: '4px', alignItems: 'center' }}>
             <SelectInput value={outputFormat} options={options} onChange={changeFormat} />
-            <button onClick={onClickExport} style={{ flex: '1 1 auto' }}>
-              勤怠情報を出力する
-            </button>
+            <Button onClick={onClickExport}>勤怠情報を出力する</Button>
           </div>
         </div>
       </Accordion>
