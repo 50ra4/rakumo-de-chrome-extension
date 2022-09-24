@@ -1,0 +1,23 @@
+.ex-main {
+  display: flex;
+}
+.ex-summary-container {
+  flex: 1 1 auto;
+  max-width: 380px;
+  margin-left: 16px;
+}
+.ex-option-container {
+  width: 180px;
+}
+
+/* for small screen */
+@media screen and (max-width: 880px) {
+  .ex-main {
+    display: block;
+    flex-direction: column;
+  }
+  .ex-summary-container {
+    margin-left: 0px;
+    margin-top: 8px;
+  }
+}

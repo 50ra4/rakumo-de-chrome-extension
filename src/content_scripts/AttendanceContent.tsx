@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import './AttendanceContent.css';
+
 import { format } from 'date-fns';
 import { SummaryReport } from '../components/SummaryReport';
 import { TextInput } from '../components/TextInput';
@@ -258,40 +260,47 @@ export function AttendanceContent() {
         title="rakumo-de-extension"
         defaultExpanded={true}
       >
-        <div style={{ maxWidth: '320px' }}>
-          <div style={{ marginBottom: '8px' }}>
-            <Button onClick={reload}>データを再取得する</Button>
+        <div className="ex-main">
+          <div className="ex-option-container">
+            <div style={{ margin: '10px 0' }}>
+              <Button onClick={reload}>データを再取得する</Button>
+            </div>
+            <div style={{ marginBottom: '4px' }}>
+              <TextInput
+                id="working-time"
+                name="workingTimePerDay"
+                label="1日の勤務時間"
+                placeholder="H:mm 形式で入力してください"
+                value={workingTime}
+                onChange={setWorkingTime}
+              />
+            </div>
+            <div style={{ marginBottom: '4px' }}>
+              <TextInput
+                id="overtime-working-time"
+                name="appliedOvertimeWorkingTime"
+                label="申請済の時間外労働時間"
+                placeholder="H:mm 形式で入力してください"
+                value={appliedOvertimeWorkingTime}
+                onChange={setAppliedOvertimeWorkingTime}
+              />
+            </div>
+            <div>
+              <h3 style={{ margin: '10px 0 8px' }}>勤怠情報出力</h3>
+              <SelectInput value={outputFormat} options={options} onChange={changeFormat} />
+              <Button onClick={onClickExport}>出力する</Button>
+            </div>
           </div>
-          <div style={{ marginBottom: '4px' }}>
-            <TextInput
-              id="working-time"
-              name="workingTimePerDay"
-              label="1日の勤務時間"
-              placeholder="H:mm 形式で入力してください"
-              value={workingTime}
-              onChange={setWorkingTime}
-            />
-          </div>
-          <div style={{ marginBottom: '4px' }}>
-            <TextInput
-              id="overtime-working-time"
-              name="appliedOvertimeWorkingTime"
-              label="申請済の時間外労働時間"
-              placeholder="H:mm 形式で入力してください"
-              value={appliedOvertimeWorkingTime}
-              onChange={setAppliedOvertimeWorkingTime}
-            />
-          </div>
-          {!!data && !!items.length && (
-            <SummaryReport
-              title={`${format(data.month, 'yyyy年M月')}の勤怠時間の予想`}
-              items={items}
-              updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
-            />
-          )}
-          <div style={{ display: 'flex', marginTop: '4px', alignItems: 'center' }}>
-            <SelectInput value={outputFormat} options={options} onChange={changeFormat} />
-            <Button onClick={onClickExport}>勤怠情報を出力する</Button>
+          <div className="ex-summary-container">
+            {
+              !!data && !!items.length ? (
+                <SummaryReport
+                  title={`${format(data.month, 'yyyy年M月')}の勤怠時間の予想`}
+                  items={items}
+                  updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
+                />
+              ) : null // TODO: 空の場合のエリア
+            }
           </div>
         </div>
       </Accordion>
