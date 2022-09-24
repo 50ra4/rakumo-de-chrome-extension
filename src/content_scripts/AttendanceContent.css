@@ -1,0 +1,44 @@
+.ex-main {
+  display: flex;
+}
+.ex-summary-container {
+  flex: 1 1 auto;
+  max-width: 380px;
+  margin-left: 16px;
+}
+.ex-option-container {
+  width: 180px;
+}
+.ex-reload-button {
+  width: 100%;
+  margin: 10px 0;
+}
+.ex-text-input {
+  margin-bottom: 4px;
+}
+
+.ex-summary-report-empty {
+  border: 3px solid #f3f3eb;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #181d21;
+  font-size: 18px;
+  font-weight: bold;
+  height: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+/* for small screen */
+@media screen and (max-width: 880px) {
+  .ex-main {
+    display: block;
+    flex-direction: column;
+  }
+  .ex-summary-container {
+    margin-left: 0px;
+    margin-top: 8px;
+  }
+}

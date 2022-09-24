@@ -1,14 +1,16 @@
 import React from 'react';
 
 type Props<T extends string> = {
+  className?: string;
   value: T;
   options: { name: string; value: T }[];
   onChange: (value: T) => void;
 };
 
-export function SelectInput<T extends string>({ value, options, onChange }: Props<T>) {
+export function SelectInput<T extends string>({ className, value, options, onChange }: Props<T>) {
   return (
     <select
+      className={className}
       style={{ height: '36px' }}
       value={value}
       onChange={(e) => {

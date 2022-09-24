@@ -70,7 +70,8 @@ export function Accordion({ id, title, disabled, defaultExpanded, children }: Pr
         style={
           isExpanded
             ? {
-                padding: '2px 4px 4px',
+                margin: '4px',
+                padding: '4px',
                 transition: 'height 0.3s, opacity 0.3s linear',
                 height: 'auto',
                 opacity: '1',

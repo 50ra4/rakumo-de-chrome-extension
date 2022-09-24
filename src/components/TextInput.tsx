@@ -1,6 +1,7 @@
 import React from 'react';
 
 export function TextInput({
+  className,
   id,
   name,
   label,
@@ -8,6 +9,7 @@ export function TextInput({
   placeholder,
   onChange,
 }: {
+  className?: string;
   id: string;
   name: string;
   label: string;
@@ -16,10 +18,14 @@ export function TextInput({
   onChange: (v: string) => void;
 }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
+    <div className={className} style={{ display: 'flex', flexDirection: 'column' }}>
       <label
         htmlFor={id}
-        style={{ marginRight: '4px', width: '120px', fontWeight: 'bold', fontSize: '14px' }}
+        style={{
+          marginBottom: '4px',
+          fontWeight: 'bold',
+          fontSize: '14px',
+        }}
       >
         {label}
       </label>
@@ -32,7 +38,7 @@ export function TextInput({
         onChange={(e) => {
           onChange(e.currentTarget.value);
         }}
-        style={{ flex: '1 1 auto' }}
+        style={{ flex: '1 1 auto', textAlign: 'right' }}
       />
     </div>
   );
