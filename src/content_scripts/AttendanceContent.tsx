@@ -203,14 +203,7 @@ export function AttendanceContent() {
       summary: data.summary,
       holidaysInPast,
     });
-    const {
-      prescribedWorkingDays,
-      prescribedWorkingTime,
-      actualWorkingDays,
-      actualWorkingTime,
-      overtimeWorkTime,
-      leavePaidTime,
-    } = data.summary;
+    const { prescribedWorkingTime, actualWorkingTime, leavePaidTime } = data.summary;
 
     const unappliedOvertimeWorkingMinutes =
       expectedOvertimeWorkingMinutes - appliedOvertimeWorkingMinutes;
@@ -228,15 +221,9 @@ export function AttendanceContent() {
         value: minutesToTimeString(expectedRemainingActualWorkingMinutes),
       },
       { label: '[予測]実労働時間（A）', value: minutesToTimeString(expectedActualWorkingMinutes) },
-      { label: '所定労働時間（C）', value: prescribedWorkingTime ?? 'N/A' },
-      { label: '有給取得時間 (年休・特休など)（B）', value: leavePaidTime ?? 'N/A' },
-      {
-        label: '所定労働日数',
-        value: prescribedWorkingDays ? `${prescribedWorkingDays}日` : 'N/A',
-      },
-      { label: '実労働日数', value: actualWorkingDays ? `${actualWorkingDays}日` : 'N/A' },
       { label: '実労働時間（A）', value: actualWorkingTime ?? 'N/A' },
-      { label: '時間外労働時間', value: overtimeWorkTime ?? 'N/A' },
+      { label: '有給取得時間 (年休・特休など)（B）', value: leavePaidTime ?? 'N/A' },
+      { label: '所定労働時間（C）', value: prescribedWorkingTime ?? 'N/A' },
     ];
   }, [appliedOvertimeWorkingMinutes, dailyWorkingMinutes, data]);
 
@@ -262,33 +249,33 @@ export function AttendanceContent() {
       >
         <div className="ex-main">
           <div className="ex-option-container">
-            <div style={{ margin: '10px 0' }}>
-              <Button onClick={reload}>データを再取得する</Button>
-            </div>
-            <div style={{ marginBottom: '4px' }}>
-              <TextInput
-                id="working-time"
-                name="workingTimePerDay"
-                label="1日の勤務時間"
-                placeholder="H:mm 形式で入力してください"
-                value={workingTime}
-                onChange={setWorkingTime}
-              />
-            </div>
-            <div style={{ marginBottom: '4px' }}>
-              <TextInput
-                id="overtime-working-time"
-                name="appliedOvertimeWorkingTime"
-                label="申請済の時間外労働時間"
-                placeholder="H:mm 形式で入力してください"
-                value={appliedOvertimeWorkingTime}
-                onChange={setAppliedOvertimeWorkingTime}
-              />
-            </div>
-            <div>
-              <h3 style={{ margin: '10px 0 8px' }}>勤怠情報出力</h3>
-              <SelectInput value={outputFormat} options={options} onChange={changeFormat} />
-              <Button onClick={onClickExport}>出力する</Button>
+            <Button className="ex-reload-button" onClick={reload}>
+              データを再取得する
+            </Button>
+            <TextInput
+              className="ex-text-input"
+              id="working-time"
+              name="workingTimePerDay"
+              label="1日の勤務時間"
+              placeholder="H:mm 形式で入力してください"
+              value={workingTime}
+              onChange={setWorkingTime}
+            />
+            <TextInput
+              className="ex-text-input"
+              id="overtime-working-time"
+              name="appliedOvertimeWorkingTime"
+              label="申請済の時間外労働時間"
+              placeholder="H:mm 形式で入力してください"
+              value={appliedOvertimeWorkingTime}
+              onChange={setAppliedOvertimeWorkingTime}
+            />
+            <div style={{ marginTop: '10px' }}>
+              <h3 style={{ margin: '0' }}>勤怠情報出力</h3>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <SelectInput value={outputFormat} options={options} onChange={changeFormat} />
+                <Button onClick={onClickExport}>出力する</Button>
+              </div>
             </div>
           </div>
           <div className="ex-summary-container">
