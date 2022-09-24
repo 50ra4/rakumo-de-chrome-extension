@@ -278,15 +278,17 @@ export function AttendanceContent() {
             </div>
           </div>
           <div className="ex-summary-container">
-            {
-              !!data && !!items.length ? (
-                <SummaryReport
-                  title={`${format(data.month, 'yyyy年M月')}の勤怠時間の予想`}
-                  items={items}
-                  updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
-                />
-              ) : null // TODO: 空の場合のエリア
-            }
+            {!!data && !!items.length ? (
+              <SummaryReport
+                title={`${format(data.month, 'yyyy年M月')}の勤怠時間の予想`}
+                items={items}
+                updatedAt={`${format(data.updatedAt, 'yyyy/MM/dd HH:mm:ss')} 更新`}
+              />
+            ) : (
+              <div className="ex-summary-report-empty">
+                1日の勤務時間を入力し、データを再取得すると予測時間が表示されます
+              </div>
+            )}
           </div>
         </div>
       </Accordion>
