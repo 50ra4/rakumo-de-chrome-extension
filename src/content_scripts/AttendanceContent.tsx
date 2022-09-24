@@ -31,6 +31,7 @@ import {
 import { minutesToTimeString } from '../utils/date';
 import { useMutationObservable } from '../hooks/useMutationObservable';
 import { Button } from '../components/Button';
+import { debounce } from '../utils/debounce';
 
 type MonthlyRecord = MonthlyAttendanceRecord & {
   summary: MonthlyAttendanceSummary;
@@ -133,7 +134,6 @@ const useLastAggregationTimeChange = (callback: (dateString: string) => void) =>
   const elm = getLastAggregationTimeElement();
 
   const handler = () => {
-    console.log('called handler');
     const date = getLastAggregationTime();
     if (!date) {
       return;
@@ -148,6 +148,7 @@ const useLastAggregationTimeChange = (callback: (dateString: string) => void) =>
   };
 
   useMutationObservable(elm, handler, {
+    characterData: true,
     childList: true, // required
     subtree: true,
   });
@@ -163,6 +164,8 @@ export function AttendanceContent() {
   const { reload, data } = useFetchMonthlyRecord();
   const { outputFormat, options, downloadRecord, changeFormat } = useOutputAttendanceRecord();
 
+  const reloadDelay = useMemo(() => debounce(reload, 2000), [reload]);
+
   useEffect(() => {
     if (data) return;
     reload();
@@ -170,11 +173,11 @@ export function AttendanceContent() {
   }, []);
 
   useDetectMonthChange(() => {
-    reload();
+    reloadDelay();
   });
 
   useLastAggregationTimeChange(() => {
-    reload();
+    reloadDelay();
   });
 
   const dailyWorkingMinutes = isValidWorkingMinutesFormat(workingTime)
