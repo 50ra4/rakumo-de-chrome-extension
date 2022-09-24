@@ -28,6 +28,7 @@ export const SummaryReport = ({ className, title, items, updatedAt }: Props) => 
             borderBottom: '1px solid #4c4b4b',
             backgroundColor: i % 2 ? '#eaf0ec' : '#ffffff',
             color: emphasized ? '#c62828' : '#181d21',
+            padding: '0 8px',
           }}
         >
           <div>{label}</div>
