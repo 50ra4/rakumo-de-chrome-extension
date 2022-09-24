@@ -1,14 +1,16 @@
 import React from 'react';
 
 type Props = {
+  className?: string;
   disabled?: boolean;
   children: React.ReactNode;
   onClick: () => void;
 };
 
-export function Button({ disabled, children, onClick }: Props) {
+export function Button({ className, disabled, children, onClick }: Props) {
   return (
     <button
+      className={className}
       style={{
         flex: '1 1 auto',
         padding: '7px 16px 6px',

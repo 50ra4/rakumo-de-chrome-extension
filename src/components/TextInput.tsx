@@ -1,6 +1,7 @@
 import React from 'react';
 
 export function TextInput({
+  className,
   id,
   name,
   label,
@@ -8,6 +9,7 @@ export function TextInput({
   placeholder,
   onChange,
 }: {
+  className?: string;
   id: string;
   name: string;
   label: string;
@@ -16,7 +18,7 @@ export function TextInput({
   onChange: (v: string) => void;
 }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
+    <div className={className} style={{ display: 'flex', flexDirection: 'column' }}>
       <label
         htmlFor={id}
         style={{
