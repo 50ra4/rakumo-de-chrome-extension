@@ -181,3 +181,17 @@ export const getMonthlyAttendanceSummary = () => {
 };
 
 export type MonthlyAttendanceSummary = ReturnType<typeof getMonthlyAttendanceSummary>;
+
+export const getLastAggregationTimeElement = () =>
+  document.querySelector<HTMLElement>('.lastAggregationTime');
+
+export const getLastAggregationTime = () => {
+  const elm = getLastAggregationTimeElement()?.lastElementChild as HTMLElement | undefined;
+  if (!elm) {
+    return undefined;
+  }
+  if (!elm.innerText) {
+    return undefined;
+  }
+  return dateStringToDate(elm.innerText, 'yyyy年M月d日 H:mm');
+};

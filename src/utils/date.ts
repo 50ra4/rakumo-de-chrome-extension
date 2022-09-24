@@ -1,7 +1,13 @@
 import { parse, isMatch, hoursToMinutes } from 'date-fns';
 import ja from 'date-fns/locale/ja';
 
-const RAKUMO_DATE_FORMAT = ['M/d (EEEEE)', 'd (EEEEE)', 'H:mm', 'yyyy年 M月度'] as const;
+const RAKUMO_DATE_FORMAT = [
+  'M/d (EEEEE)',
+  'd (EEEEE)',
+  'H:mm',
+  'yyyy年 M月度',
+  'yyyy年M月d日 H:mm',
+] as const;
 
 type DateFormat = typeof RAKUMO_DATE_FORMAT[number];
 

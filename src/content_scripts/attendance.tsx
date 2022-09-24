@@ -19,6 +19,8 @@ import {
   getMonthlyAttendanceSummary,
   getDisplayedMonthElement,
   getDisplayedMonth,
+  getLastAggregationTimeElement,
+  getLastAggregationTime,
 } from '../document';
 import {
   generateCsv,
@@ -122,11 +124,32 @@ const useDetectMonthChange = (callback: (month: string) => void) => {
     attributes: true,
     attributeFilter: ['class'],
   });
+};
 
-  useEffect(() => {
-    handler();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+const useLastAggregationTimeChange = (callback: (dateString: string) => void) => {
+  const previousValue = useRef('');
+
+  const elm = getLastAggregationTimeElement();
+
+  const handler = () => {
+    console.log('called handler');
+    const date = getLastAggregationTime();
+    if (!date) {
+      return;
+    }
+
+    const dateStr = format(date, 'yyyy-M-d H:mm');
+    if (dateStr === previousValue.current) {
+      return;
+    }
+    previousValue.current = dateStr;
+    callback(dateStr);
+  };
+
+  useMutationObservable(elm, handler, {
+    childList: true, // required
+    subtree: true,
+  });
 };
 
 const Root = () => {
@@ -139,7 +162,17 @@ const Root = () => {
   const { reload, data } = useFetchMonthlyRecord();
   const { outputFormat, options, downloadRecord, changeFormat } = useOutputAttendanceRecord();
 
+  useEffect(() => {
+    if (data) return;
+    reload();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useDetectMonthChange(() => {
+    reload();
+  });
+
+  useLastAggregationTimeChange(() => {
     reload();
   });
 
