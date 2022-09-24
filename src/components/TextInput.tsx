@@ -16,10 +16,14 @@ export function TextInput({
   onChange: (v: string) => void;
 }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center' }}>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
       <label
         htmlFor={id}
-        style={{ marginRight: '4px', width: '120px', fontWeight: 'bold', fontSize: '14px' }}
+        style={{
+          marginBottom: '4px',
+          fontWeight: 'bold',
+          fontSize: '14px',
+        }}
       >
         {label}
       </label>
@@ -32,7 +36,7 @@ export function TextInput({
         onChange={(e) => {
           onChange(e.currentTarget.value);
         }}
-        style={{ flex: '1 1 auto' }}
+        style={{ flex: '1 1 auto', textAlign: 'right' }}
       />
     </div>
   );
