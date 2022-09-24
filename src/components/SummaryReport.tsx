@@ -3,6 +3,7 @@ import React from 'react';
 type SummaryReportItem = {
   label: string;
   value: string;
+  emphasized?: boolean;
 };
 
 type Props = {
@@ -16,7 +17,7 @@ export const SummaryReport = ({ className, title, items, updatedAt }: Props) => 
   return (
     <section className={className}>
       <h3 style={{ margin: '10px 0' }}>{title}</h3>
-      {items.map(({ label, value }, i) => (
+      {items.map(({ label, value, emphasized }, i) => (
         <div
           key={label}
           style={{
@@ -26,6 +27,7 @@ export const SummaryReport = ({ className, title, items, updatedAt }: Props) => 
             alignItems: 'center',
             borderBottom: '1px solid #4c4b4b',
             backgroundColor: i % 2 ? '#eaf0ec' : '#ffffff',
+            color: emphasized ? '#c62828' : '#181d21',
           }}
         >
           <div>{label}</div>

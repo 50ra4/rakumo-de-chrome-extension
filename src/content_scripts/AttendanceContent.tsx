@@ -211,9 +211,8 @@ export function AttendanceContent() {
     return [
       {
         label: '未申請の時間外労働時間',
-        value: minutesToTimeString(
-          unappliedOvertimeWorkingMinutes > 0 ? unappliedOvertimeWorkingMinutes : 0,
-        ),
+        value: minutesToTimeString(unappliedOvertimeWorkingMinutes),
+        emphasized: unappliedOvertimeWorkingMinutes > 0,
       },
       { label: '[予測]時間外労働時間', value: minutesToTimeString(expectedOvertimeWorkingMinutes) },
       {
