@@ -1,5 +1,5 @@
 import { MonthlyAttendanceSummary } from '../document';
-import { calcExpectedReportSummary } from './attendance';
+import { calcExpectedReportSummary, isValidWorkingMinutesFormat } from './attendance';
 
 const createMonthlyAttendanceSummary = ({
   prescribedWorkingDays = 0,
@@ -82,6 +82,27 @@ describe('attendance', () => {
           }),
         ).toHaveProperty('expectedOvertimeWorkingMinutes', 0);
       });
+    });
+  });
+
+  describe('isValidWorkingMinutesFormat', () => {
+    it('H:mmのフォーマットを満たすとき、trueを返却', () => {
+      expect(isValidWorkingMinutesFormat('5:30')).toBe(true);
+    });
+    it('時刻がnumberでない、または分がnumberでない場合、falseを返却', () => {
+      expect(isValidWorkingMinutesFormat('x:30')).toBe(false);
+      expect(isValidWorkingMinutesFormat('2:x')).toBe(false);
+    });
+    it('分が60以上の場合、falseを返却', () => {
+      // TODO:
+      expect(isValidWorkingMinutesFormat('2:00')).toBe(true);
+      expect(isValidWorkingMinutesFormat('2:59')).toBe(true);
+      expect(isValidWorkingMinutesFormat('2:60')).toBe(false);
+    });
+    it('時刻が24より大きい場合、trueを返却', () => {
+      expect(isValidWorkingMinutesFormat('23:59')).toBe(true);
+      expect(isValidWorkingMinutesFormat('24:00')).toBe(true);
+      expect(isValidWorkingMinutesFormat('25:00')).toBe(true);
     });
   });
 });

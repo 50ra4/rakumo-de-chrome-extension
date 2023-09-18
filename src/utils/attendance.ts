@@ -1,8 +1,24 @@
 import { MonthlyAttendanceSummary } from '../document';
 import { isMatchDateFormat, timeStringToMinute } from './date';
 
-export const isValidWorkingMinutesFormat = (x: unknown): x is string =>
-  typeof x === 'string' && isMatchDateFormat(x, 'H:mm');
+export const isValidWorkingMinutesFormat = (x: unknown): x is string => {
+  if (typeof x !== 'string') {
+    return false;
+  }
+  if (isMatchDateFormat(x, 'H:mm')) {
+    return true;
+  }
+
+  // e.g: 25:00
+  const [hour, minute] = x.split(':').map((v) => +v);
+  if ([hour, minute].some((v) => Number.isNaN(v))) {
+    return false;
+  }
+  if (minute > 59) {
+    return false;
+  }
+  return true;
+};
 
 export const toWorkingMinutes = (workingTimeStr: string) => {
   if (!isValidWorkingMinutesFormat(workingTimeStr)) {
