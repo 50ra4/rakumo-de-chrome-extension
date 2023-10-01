@@ -206,10 +206,45 @@ export function AttendanceContent() {
       summary: data.summary,
       holidaysInPast,
     });
-    const { prescribedWorkingTime, actualWorkingTime, leavePaidTime } = data.summary;
+    const {
+      prescribedWorkingTime,
+      prescribedWorkingDays,
+      actualWorkingTime,
+      leavePaidTime,
+      actualWorkingMinutes,
+    } = data.summary;
 
     const unappliedOvertimeWorkingMinutes =
       expectedOvertimeWorkingMinutes - appliedOvertimeWorkingMinutes;
+
+    // FIXME: 社内向けの計算ロジックを関数に移動し、テストを書く
+    /** （社内）標準労働時間 */
+    const companyStandardWorkingHour = 8;
+    const companyPrescribedWorkingMinutes = prescribedWorkingDays
+      ? prescribedWorkingDays * companyStandardWorkingHour * 60
+      : undefined;
+    const companyPrescribedWorkingTime = companyPrescribedWorkingMinutes
+      ? minutesToTimeString(companyPrescribedWorkingMinutes)
+      : undefined;
+
+    /** （社内）有給取得時間 */
+    const companyLeavePaidMinutes = holidaysInPast * companyStandardWorkingHour * 60;
+
+    /** （社内）総労働時間 */
+    const companyTotalWorkingMinutes = actualWorkingMinutes
+      ? actualWorkingMinutes + companyLeavePaidMinutes
+      : undefined;
+
+    /** （社内）時間外労働時間 */
+    const companyOvertimeWorkMinutes =
+      companyTotalWorkingMinutes && companyPrescribedWorkingMinutes
+        ? companyTotalWorkingMinutes - companyPrescribedWorkingMinutes
+        : undefined;
+
+    /** （支払予定の）超過時間外勤務時間 */
+    const companyPaidOvertimeWorkMinute = companyOvertimeWorkMinutes
+      ? companyOvertimeWorkMinutes - 20 * 60
+      : undefined;
 
     return [
       {
@@ -226,6 +261,24 @@ export function AttendanceContent() {
       { label: '実労働時間（A）', value: actualWorkingTime ?? 'N/A' },
       { label: '有給取得時間 (年休・特休など)（B）', value: leavePaidTime ?? 'N/A' },
       { label: '所定労働時間（C）', value: prescribedWorkingTime ?? 'N/A' },
+      { label: '[社内]所定労働時間', value: companyPrescribedWorkingTime ?? 'N/A' },
+      { label: '[社内]有給取得時間', value: minutesToTimeString(companyLeavePaidMinutes) },
+      {
+        label: '[社内]総労働時間',
+        value: companyTotalWorkingMinutes ? minutesToTimeString(companyTotalWorkingMinutes) : 'N/A',
+      },
+      {
+        label: '[社内]時間外労働時間',
+        value: companyOvertimeWorkMinutes ? minutesToTimeString(companyOvertimeWorkMinutes) : 'N/A',
+      },
+      {
+        label: '[社内]超過時間外勤務時間',
+        value: companyPaidOvertimeWorkMinute
+          ? minutesToTimeString(
+              companyPaidOvertimeWorkMinute > 0 ? companyPaidOvertimeWorkMinute : 0,
+            )
+          : 'N/A',
+      },
     ];
   }, [appliedOvertimeWorkingMinutes, dailyWorkingMinutes, data]);
 
