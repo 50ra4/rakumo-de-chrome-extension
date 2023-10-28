@@ -32,6 +32,7 @@ import { minutesToTimeString } from '../utils/date';
 import { useMutationObservable } from '../hooks/useMutationObservable';
 import { Button } from '../components/Button';
 import { debounce } from '../utils/debounce';
+import { calcCompanyWorkingTimes } from '../utils/company';
 
 type MonthlyRecord = MonthlyAttendanceRecord & {
   summary: MonthlyAttendanceSummary;
@@ -193,9 +194,8 @@ export function AttendanceContent() {
       return [];
     }
 
-    const holidaysInPast = data.records.filter(
-      ({ isHoliday, isFuture }) => isHoliday && !isFuture,
-    ).length;
+    const holidayRecords = data.records.filter(({ isHoliday }) => isHoliday);
+    const holidaysInPast = holidayRecords.filter(({ isFuture }) => !isFuture).length;
 
     const {
       expectedRemainingActualWorkingMinutes,
@@ -206,10 +206,30 @@ export function AttendanceContent() {
       summary: data.summary,
       holidaysInPast,
     });
-    const { prescribedWorkingTime, actualWorkingTime, leavePaidTime } = data.summary;
+    const {
+      prescribedWorkingTime,
+      prescribedWorkingDays,
+      actualWorkingTime,
+      leavePaidTime,
+      actualWorkingMinutes,
+      overtimeDeemedMinutes,
+    } = data.summary;
 
     const unappliedOvertimeWorkingMinutes =
       expectedOvertimeWorkingMinutes - appliedOvertimeWorkingMinutes;
+
+    const {
+      companyPrescribedWorkingMinutes,
+      companyTotalWorkingMinutes,
+      companyLeavePaidMinutes,
+      companyOvertimeWorkMinutes,
+      companyPaidOvertimeWorkMinutes,
+    } = calcCompanyWorkingTimes({
+      prescribedWorkingDays,
+      actualWorkingMinutes,
+      overtimeDeemedMinutes,
+      holidays: holidayRecords.length,
+    });
 
     return [
       {
@@ -226,6 +246,22 @@ export function AttendanceContent() {
       { label: '実労働時間（A）', value: actualWorkingTime ?? 'N/A' },
       { label: '有給取得時間 (年休・特休など)（B）', value: leavePaidTime ?? 'N/A' },
       { label: '所定労働時間（C）', value: prescribedWorkingTime ?? 'N/A' },
+      { label: '[社内]所定労働時間', value: minutesToTimeString(companyPrescribedWorkingMinutes) },
+      { label: '[社内]有給取得時間', value: minutesToTimeString(companyLeavePaidMinutes) },
+      {
+        label: '[社内]総労働時間',
+        value: minutesToTimeString(companyTotalWorkingMinutes),
+      },
+      {
+        label: '[社内]時間外労働時間',
+        value: minutesToTimeString(companyOvertimeWorkMinutes),
+      },
+      {
+        label: '[社内]超過時間外勤務時間',
+        value: minutesToTimeString(
+          companyPaidOvertimeWorkMinutes > 0 ? companyPaidOvertimeWorkMinutes : 0,
+        ),
+      },
     ];
   }, [appliedOvertimeWorkingMinutes, dailyWorkingMinutes, data]);
 
